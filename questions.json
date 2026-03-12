@@ -1,0 +1,641 @@
+[
+  {
+    "question": "What is Object-Oriented Programming (OOP)?",
+    "answers": [
+      "Object-Oriented Programming is a programming paradigm that organizes code into self-contained objects, each combining data (attributes) and methods that operate on that data. It is built on four core concepts: Encapsulation (bundling data and methods), Inheritance (creating new classes from existing ones), Polymorphism (objects of different types responding to the same interface), and Abstraction (hiding implementation details and exposing only essential functionality). OOP promotes modularity, reusability, and flexibility."
+    ],
+    "keywords": ["encapsulation", "inheritance", "polymorphism", "abstraction", "class"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is the difference between procedural and Object-Oriented programming?",
+    "answers": [
+      "Procedural programming is linear and task-centric: functions act on (often global) data, and code is structured as a sequence of procedures. OOP is object-centric: data and functions are bundled within objects that communicate through methods, ensuring encapsulation and data integrity. OOP additionally supports inheritance and polymorphism, which procedural programming lacks. C is a classic procedural language; Java is a classic OOP language."
+    ],
+    "keywords": ["procedural", "OOP", "encapsulation", "global data", "paradigm"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is encapsulation?",
+    "answers": [
+      "Encapsulation is an OOP principle that bundles data (attributes) and the methods that act on that data within a single class, hiding internal state from external code. External access is provided through public getter and setter methods, which can enforce constraints. Benefits include security (controlled data access), simplicity (abstract interface), and flexibility (internal implementation can change without breaking external code)."
+    ],
+    "keywords": ["data hiding", "getter", "setter", "access control", "bundling"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is polymorphism? Explain overriding and overloading.",
+    "answers": [
+      "Polymorphism allows objects of different types to be treated through a shared interface while maintaining their unique behaviors. Overloading (compile-time polymorphism) allows multiple methods with the same name but different parameter lists in the same class — the compiler chooses the correct one. Overriding (runtime polymorphism) allows a subclass to provide its own implementation of a method already defined in the parent class — the correct method is determined at runtime via dynamic dispatch."
+    ],
+    "keywords": ["overloading", "overriding", "compile-time", "runtime", "dynamic dispatch"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is inheritance? Name some types of inheritance.",
+    "answers": [
+      "Inheritance allows a class (subclass/child class) to acquire properties and methods from another class (superclass/parent class), establishing an 'is-a' relationship and promoting code reuse. Types include: Single (one parent), Multiple (multiple parents, supported in C++ and via interfaces in Java), Multilevel (chain of inheritance), Hierarchical (one parent, multiple children), and Hybrid (combination of the above)."
+    ],
+    "keywords": ["subclass", "superclass", "single inheritance", "multiple inheritance", "multilevel"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is abstraction? Name some abstraction techniques.",
+    "answers": [
+      "Abstraction focuses on exposing only essential characteristics of an object while hiding unnecessary implementation details. Two main techniques: (1) Abstract Classes — cannot be instantiated directly, may contain both abstract (no body) and concrete methods, serve as base classes; (2) Interfaces — declare method signatures without implementation, enforcing a contract that implementing classes must fulfill. Abstraction improves code reusability, maintainability, and security."
+    ],
+    "keywords": ["abstract class", "interface", "hiding", "contract", "implementation"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is a class in OOP?",
+    "answers": [
+      "A class is a blueprint or template for creating objects. It encapsulates attributes (data) and methods (behavior) under a unified structure. When instantiated, each object carries its own data while sharing the class's method definitions. Classes support OOP principles: inheritance (subclasses extend them), encapsulation (attributes hidden behind access modifiers), polymorphism (method overriding), and abstraction (exposing only essential methods)."
+    ],
+    "keywords": ["blueprint", "attributes", "methods", "instantiation", "template"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is an object in OOP?",
+    "answers": [
+      "An object is a specific instance of a class. It has three core characteristics: Identity (unique identity distinguishing it from other objects), State (defined by its attribute values, which can change over time), and Behavior (defined by its methods). Objects are created through instantiation, may undergo state changes, and are eventually destroyed (often by garbage collection)."
+    ],
+    "keywords": ["instance", "state", "identity", "behavior", "instantiation"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "How do access specifiers work and what are they typically?",
+    "answers": [
+      "Access specifiers (or access modifiers) define the visibility of class members. The three common types are: Private (accessible only within the defining class), Protected (accessible within the class and its subclasses), and Public (accessible from anywhere). They implement encapsulation by restricting direct access to internal data, forcing interaction through controlled interfaces. Best practice: default to private and only broaden visibility when necessary."
+    ],
+    "keywords": ["private", "protected", "public", "visibility", "access modifier"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What are the different ways to overload a method?",
+    "answers": [
+      "Method overloading can be achieved in three ways: (1) Changing the number of parameters — e.g., add(int a, int b) vs add(int a, int b, int c); (2) Changing the order of parameter types — e.g., method(String, int) vs method(int, String); (3) Changing the parameter types — e.g., method(int id) vs method(double salary). The compiler selects the correct method at compile time based on the method signature."
+    ],
+    "keywords": ["method signature", "parameter count", "parameter type", "compile-time", "overloading"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is cohesion in OOP?",
+    "answers": [
+      "Cohesion refers to how closely related the methods and attributes within a single class are. High cohesion means the class is focused on one specific responsibility, making it easier to understand, maintain, and test. Low cohesion means a class has multiple unrelated responsibilities. The most desirable level is functional cohesion, where every method contributes to one well-defined task. This aligns with the Single Responsibility Principle (SRP)."
+    ],
+    "keywords": ["single responsibility", "SRP", "functional cohesion", "maintainability", "modular"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is coupling in OOP?",
+    "answers": [
+      "Coupling describes the degree of interdependence between classes or modules. Loose coupling is preferred as it improves flexibility, maintainability, and testability. Types range from tight (Content Coupling — one module directly accesses another's internal data) to loose (Message Coupling — communication only through standard interfaces). SOLID principles help reduce coupling: DIP (Dependency Inversion) favors abstractions over concrete implementations, ISP (Interface Segregation) avoids fat interfaces, and SRP minimizes dependencies."
+    ],
+    "keywords": ["loose coupling", "tight coupling", "SOLID", "dependency", "DIP"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is a constructor and how is it used?",
+    "answers": [
+      "A constructor is a special method with the same name as the class and no return type. It is automatically called when an object is created to initialize the object's state. Types include: Default Constructor (no parameters, auto-provided if none defined), Parameterized Constructor (accepts arguments for custom initialization), Copy Constructor (initializes an object from another object of the same class), and Static Constructor (initializes static members). Constructors ensure objects are always in a valid state upon creation."
+    ],
+    "keywords": ["constructor", "initialization", "default constructor", "parameterized", "copy constructor"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is a destructor or finalizer in OOP?",
+    "answers": [
+      "A destructor (or finalizer) is a special method called automatically before an object is destroyed. Its purpose is to release resources such as memory, file handles, network connections, or database connections. In C++, destructors are called explicitly when an object goes out of scope. In languages like Java and C#, garbage collectors handle memory management, making explicit destructors less necessary. Java's finalize() method is the equivalent but is generally discouraged in favor of try-with-resources."
+    ],
+    "keywords": ["destructor", "garbage collection", "memory management", "resource cleanup", "finalize"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "Compare inheritance, mixin, and composition.",
+    "answers": [
+      "Inheritance ('is-a'): A subclass inherits from a superclass. Direct code reuse but can create complex, brittle hierarchies. Mixin ('can-do-this'): A class provides methods to other classes without being a standalone entity — avoids deep inheritance while enabling code sharing across unrelated classes. Composition ('has-a'): Objects are built by combining simpler objects. The most flexible approach, encourages modularity and component swapping. Modern OOP guidelines favor composition over inheritance for greater flexibility and maintainability."
+    ],
+    "keywords": ["composition", "mixin", "is-a", "has-a", "composition over inheritance"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What are virtual functions and pure virtual functions?",
+    "answers": [
+      "Virtual functions are functions defined in a base class that can be overridden in derived classes. They enable runtime polymorphism through dynamic dispatch, ensuring the correct subclass method is called even through a base class pointer/reference. Pure virtual functions (abstract functions) are declared in the base class with no implementation (= 0 in C++) and must be implemented by all derived classes. A class containing at least one pure virtual function becomes an abstract class and cannot be instantiated."
+    ],
+    "keywords": ["virtual", "pure virtual", "runtime polymorphism", "abstract class", "dynamic dispatch"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is the difference between an abstract class and an interface?",
+    "answers": [
+      "Both cannot be instantiated directly, but they differ in: Implementation — abstract classes can have both abstract and concrete methods; interfaces only declare method signatures (in traditional OOP). Inheritance — a class can implement multiple interfaces but typically extends only one abstract class. Usage — abstract classes are used when subclasses share common behavior; interfaces define a contract that unrelated classes can fulfill. In Java 8+, interfaces can have default implementations, narrowing the gap."
+    ],
+    "keywords": ["abstract class", "interface", "multiple inheritance", "contract", "default method"],
+    "difficulty": "medium",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is exception handling in OOP?",
+    "answers": [
+      "Exception handling is a mechanism for managing runtime errors to prevent program crashes. The try block encloses code that might throw an exception; the catch block handles the exception if thrown; the finally block always executes regardless of whether an exception occurred, useful for cleanup. Exceptions are objects representing error conditions. This allows programs to recover gracefully from unexpected states and centralizes error-handling logic."
+    ],
+    "keywords": ["try", "catch", "finally", "runtime error", "exception object"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What is Garbage Collection in OOP?",
+    "answers": [
+      "Garbage Collection (GC) is an automatic memory management mechanism that identifies and frees memory occupied by objects that are no longer referenced or needed by the program. It prevents memory leaks without requiring the programmer to manually deallocate memory. Languages like Java, Python, and C# include built-in GC. The V8 JavaScript engine uses a mark-and-sweep algorithm: it marks all reachable objects from roots (globals), then sweeps unreachable ones from memory."
+    ],
+    "keywords": ["garbage collection", "mark-and-sweep", "memory management", "memory leak", "automatic"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What are the limitations of OOP?",
+    "answers": [
+      "OOP has several limitations: it is usually not suitable for small or simple problems due to overhead; it requires more time and intensive testing; it demands careful upfront planning and design; programs can be larger and slower due to object creation overhead; tight coupling between parent and child classes in inheritance can make changes harder; and it requires programmers to think in terms of objects, which can be counterintuitive for certain problem domains."
+    ],
+    "keywords": ["overhead", "complexity", "tight coupling", "planning", "design"],
+    "difficulty": "easy",
+    "topic": "OOP"
+  },
+  {
+    "question": "What are the different data types in JavaScript?",
+    "answers": [
+      "JavaScript has two categories of data types. Primitive types (single values): String, Number, BigInt, Boolean, Undefined, Null, and Symbol. Non-primitive types: Object (includes arrays, functions, dates, etc.). Primitive types are passed by value; non-primitive types are passed by reference. The typeof operator can check the type. Note: typeof null returns 'object', which is a known JavaScript bug."
+    ],
+    "keywords": ["primitive", "object", "typeof", "undefined", "null"],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "Explain hoisting in JavaScript.",
+    "answers": [
+      "Hoisting is JavaScript's default behavior of moving variable and function declarations to the top of their scope before execution. var declarations are hoisted and initialized as undefined. let and const are hoisted but remain in a Temporal Dead Zone (TDZ) until their declaration is reached, so accessing them early throws a ReferenceError. Function declarations are fully hoisted (including body); function expressions are not. To avoid hoisting issues, use let/const and declare variables before use."
+    ],
+    "keywords": ["hoisting", "var", "let", "const", "temporal dead zone"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is the difference between == and === in JavaScript?",
+    "answers": [
+      "== (loose equality) compares values after type coercion — it converts both operands to a common type before comparison (e.g., 5 == '5' is true). === (strict equality) compares both value and type without any conversion (e.g., 5 === '5' is false). Using === is generally recommended to avoid unexpected coercion bugs. Similarly, != vs !== follow the same loose vs strict rules."
+    ],
+    "keywords": ["loose equality", "strict equality", "type coercion", "comparison", "==="],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is the difference between var, let, and const in JavaScript?",
+    "answers": [
+      "var is function-scoped, can be redeclared and reassigned, and is hoisted as undefined — it is added to the global/window object when declared globally. let is block-scoped, can be reassigned but not redeclared in the same scope, and is hoisted but in a TDZ. const is also block-scoped, cannot be reassigned or redeclared — though for objects, their properties can still be mutated. In modern JavaScript, let and const are strongly preferred over var."
+    ],
+    "keywords": ["var", "let", "const", "block scope", "function scope"],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "Explain closures in JavaScript.",
+    "answers": [
+      "A closure is when a function retains access to variables from its outer (lexical) scope even after the outer function has finished executing. This allows inner functions to 'remember' and use variables from their enclosing scope. Closures are used to create private variables, implement the module pattern, build memoization functions, and maintain state across async operations. Common use cases include counters, event handlers, and curried functions."
+    ],
+    "keywords": ["closure", "lexical scope", "private variable", "outer function", "memory"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What does the 'this' keyword refer to in JavaScript?",
+    "answers": [
+      "this refers to the object that invoked the current function. In a global context, this is the global/window object. Inside an object method, this is the object before the dot. In a constructor, this is the newly created instance. Arrow functions do not have their own this — they inherit it from the surrounding lexical scope. The value of this can be explicitly set using call(), apply(), or bind()."
+    ],
+    "keywords": ["this", "context", "arrow function", "bind", "lexical scope"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is implicit type coercion in JavaScript?",
+    "answers": [
+      "Implicit type coercion is JavaScript's automatic conversion of a value from one data type to another. With the + operator, if one operand is a string, the number is converted to a string (concatenation). With -, *, / operators, strings are converted to numbers. The == operator coerces types before comparing. Boolean coercion occurs in if statements and logical operators — all values are truthy except false, 0, 0n, -0, '', null, undefined, and NaN."
+    ],
+    "keywords": ["type coercion", "truthy", "falsy", "implicit conversion", "operator"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is an Immediately Invoked Function Expression (IIFE) in JavaScript?",
+    "answers": [
+      "An IIFE is a function that runs as soon as it is defined. It uses two sets of parentheses: the first wraps the function to make it a function expression (not a declaration), and the second invokes it immediately. Syntax: (function(){ ... })(). IIFEs create a private scope, avoiding pollution of the global namespace. They are commonly used for module initialization, encapsulation, and one-time setup code."
+    ],
+    "keywords": ["IIFE", "immediately invoked", "scope", "closure", "encapsulation"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "Explain call(), apply(), and bind() in JavaScript.",
+    "answers": [
+      "All three explicitly set the value of this for a function. call(obj, arg1, arg2) invokes the function immediately with this set to obj and arguments passed individually. apply(obj, [args]) is identical but arguments are passed as an array. bind(obj, arg1) returns a new function with this permanently bound to obj — it does not invoke immediately. bind is useful for event handlers and callbacks where context may otherwise be lost."
+    ],
+    "keywords": ["call", "apply", "bind", "this", "context"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is currying in JavaScript?",
+    "answers": [
+      "Currying transforms a function that takes multiple arguments into a sequence of functions each taking one argument. For example, f(a, b) becomes f(a)(b). It uses closures to remember previously passed arguments. Currying enables partial application — pre-filling some arguments of a function to create a specialized version. It promotes reusability and function composition in functional programming patterns."
+    ],
+    "keywords": ["currying", "partial application", "closure", "higher-order function", "functional programming"],
+    "difficulty": "hard",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What are Promises in JavaScript?",
+    "answers": [
+      "A Promise is an object representing the eventual completion or failure of an asynchronous operation. It has three states: Pending (initial), Fulfilled (success, resolved), and Rejected (failure). Promises are created using new Promise((resolve, reject) => {...}). Consumers use .then() to handle fulfillment and .catch() to handle rejection. Promises solve callback hell by enabling chaining. Promise.all() fails fast if any promise rejects; Promise.allSettled() waits for all and returns each outcome."
+    ],
+    "keywords": ["promise", "async", "resolve", "reject", "then"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is async/await in JavaScript?",
+    "answers": [
+      "async/await is syntactic sugar over Promises that allows asynchronous code to be written in a synchronous style, improving readability. An async function always returns a Promise. The await keyword pauses execution of the async function until the Promise settles, then returns the resolved value. Error handling uses standard try/catch. Unlike Promise chains, async/await avoids deeply nested .then() calls, making complex async flows easier to follow."
+    ],
+    "keywords": ["async", "await", "promise", "asynchronous", "try-catch"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What are Higher-Order Functions in JavaScript?",
+    "answers": [
+      "Higher-order functions are functions that either take other functions as arguments or return functions as output. They are possible because JavaScript treats functions as first-class citizens. Common built-in examples include map() (transforms each element), filter() (returns elements passing a test), and reduce() (reduces array to a single value). Custom examples include callbacks, curried functions, and function factories. They are a cornerstone of functional programming in JavaScript."
+    ],
+    "keywords": ["higher-order function", "first-class", "map", "filter", "reduce"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "Explain scope and scope chain in JavaScript.",
+    "answers": [
+      "Scope determines where variables and functions are accessible in code. Global scope: accessible everywhere. Function scope: variables declared with var inside a function are only accessible there. Block scope: variables declared with let/const inside {} are confined to that block. The scope chain is the mechanism by which JavaScript resolves variable references — if a variable isn't found in the current scope, the engine looks in the outer scope, continuing up to global scope. A ReferenceError is thrown if not found anywhere."
+    ],
+    "keywords": ["scope", "scope chain", "global", "block scope", "lexical"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is event delegation in JavaScript?",
+    "answers": [
+      "Event delegation is a technique where a single event listener is attached to a parent element instead of individual listeners on each child. Since events bubble up the DOM, the parent can capture events from all descendants. This improves performance (fewer listeners), reduces memory usage, and works well with dynamically added elements. The event.target property identifies which child triggered the event, and event.stopPropagation() can stop bubbling if needed."
+    ],
+    "keywords": ["event delegation", "bubbling", "event.target", "parent listener", "performance"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is memoization in JavaScript?",
+    "answers": [
+      "Memoization is a caching technique where the result of a function call is stored based on its input arguments. On subsequent calls with the same arguments, the cached result is returned immediately instead of recomputing. It uses closures to maintain a private cache object. Memoization is especially valuable for expensive computations (e.g., recursive algorithms). The trade-off is increased memory usage for the cache, so it should be applied selectively."
+    ],
+    "keywords": ["memoization", "caching", "closure", "performance", "recursion"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What are arrow functions in JavaScript and how do they differ from regular functions?",
+    "answers": [
+      "Arrow functions (ES6) provide a concise syntax: (a, b) => a + b. Key differences from regular functions: (1) No own this — they inherit this from the enclosing lexical scope, making them ideal for callbacks; (2) Cannot be used as constructors (new keyword throws an error); (3) No arguments object; (4) No prototype property; (5) If the body is a single expression, curly braces and return keyword can be omitted. They should not be used as object methods when this context matters."
+    ],
+    "keywords": ["arrow function", "lexical this", "ES6", "concise syntax", "no arguments object"],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is the Temporal Dead Zone (TDZ) in JavaScript?",
+    "answers": [
+      "The Temporal Dead Zone is the period between entering a block scope and the actual declaration of a let or const variable. During this zone, the variable exists in scope (is hoisted) but cannot be accessed — any attempt throws a ReferenceError. var does not have a TDZ because it is hoisted and initialized as undefined. TDZ exists to catch bugs from using variables before they are intentionally declared and initialized."
+    ],
+    "keywords": ["TDZ", "temporal dead zone", "let", "const", "ReferenceError"],
+    "difficulty": "medium",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is object destructuring in JavaScript?",
+    "answers": [
+      "Destructuring is an ES6 syntax for extracting values from arrays or objects into distinct variables in a single statement. Object destructuring: const { name, age } = person; — pulls out properties by key name. Array destructuring: const [a, b] = arr; — pulls out by position. You can rename variables during destructuring using colon notation: const { name: fullName } = person. Destructuring simplifies code that would otherwise require multiple assignment statements."
+    ],
+    "keywords": ["destructuring", "ES6", "object", "array", "assignment"],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is the rest parameter and spread operator in JavaScript?",
+    "answers": [
+      "Both use the ... syntax but serve opposite purposes. Rest parameter collects multiple function arguments into an array: function f(...args) — must be the last parameter. Spread operator expands an iterable (array/object) into individual elements — used in function calls (fn(...arr)), array literals ([...arr1, ...arr2]), and object literals ({...obj1, ...obj2}) for cloning or merging. Rest gathers; spread expands."
+    ],
+    "keywords": ["rest parameter", "spread operator", "ES6", "variadic", "array"],
+    "difficulty": "easy",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What is a Database Management System (DBMS)?",
+    "answers": [
+      "A DBMS is software that acts as an intermediary between users and a database, enabling efficient storage, retrieval, and management of data. It provides data modeling (organizing data into tables and relationships), data manipulation (CRUD operations via SQL or APIs), data integrity enforcement, security and access control, concurrency management for simultaneous users, and backup/recovery mechanisms. Examples include MySQL, PostgreSQL (RDBMS), MongoDB (NoSQL), and Redis (in-memory)."
+    ],
+    "keywords": ["DBMS", "SQL", "CRUD", "data integrity", "relational"],
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Explain the ACID properties in databases.",
+    "answers": [
+      "ACID ensures reliable transaction processing. Atomicity: a transaction is all-or-nothing — if any step fails, all changes are rolled back. Consistency: a transaction takes the database from one valid state to another, preserving integrity rules. Isolation: concurrent transactions execute as if serialized — their intermediate states are invisible to each other. Durability: once a transaction is committed, changes persist even after a system failure, typically enforced via write-ahead logging."
+    ],
+    "keywords": ["atomicity", "consistency", "isolation", "durability", "transaction"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What are the differences between SQL and NoSQL databases?",
+    "answers": [
+      "SQL databases are table-based, schema-defined, and use Structured Query Language. They guarantee ACID compliance and excel at complex joins and relational integrity. NoSQL databases support multiple data models (document, key-value, column-family, graph), are schema-flexible, and scale horizontally more readily. SQL databases use vertical scaling historically; NoSQL favors horizontal scaling. SQL is best for structured data with clear relationships; NoSQL suits unstructured, rapidly changing, or high-volume distributed data."
+    ],
+    "keywords": ["SQL", "NoSQL", "schema", "horizontal scaling", "ACID"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a primary key and why is it important?",
+    "answers": [
+      "A primary key is a column (or set of columns) that uniquely identifies each record in a table. It enforces uniqueness (no two rows can have the same PK value) and non-nullability (PK columns cannot be NULL). Primary keys ensure data integrity, enable efficient record retrieval, serve as the target for foreign key references from other tables, and support data normalization. Each table should have exactly one primary key."
+    ],
+    "keywords": ["primary key", "uniqueness", "non-null", "identifier", "referential integrity"],
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a foreign key and what role does it play?",
+    "answers": [
+      "A foreign key is a column in one table (child/referencing table) that references the primary key of another table (parent/referenced table). It enforces referential integrity — ensuring that a value in the FK column must either be NULL or match an existing PK value in the parent table. Foreign keys define relationships between tables (one-to-many, many-to-many via junction tables) and are used in JOIN queries to combine related data from multiple tables."
+    ],
+    "keywords": ["foreign key", "referential integrity", "join", "relationship", "parent table"],
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is database normalization and why is it used?",
+    "answers": [
+      "Normalization is the process of organizing a relational database schema to minimize data redundancy and prevent update anomalies. It involves decomposing tables into smaller, well-structured tables based on functional dependencies. Normal forms: 1NF (atomic values, no repeating groups), 2NF (no partial dependencies), 3NF (no transitive dependencies), BCNF (every determinant is a superkey). Benefits: data consistency, easier maintenance, reduced storage. Most systems target 3NF as a balance between integrity and performance."
+    ],
+    "keywords": ["normalization", "1NF", "2NF", "3NF", "redundancy"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is denormalization and when would you use it?",
+    "answers": [
+      "Denormalization intentionally introduces redundancy into a normalized schema to improve read query performance by reducing the number of JOIN operations. It is typically applied in read-heavy systems, analytics/reporting databases, lookup tables with static data, and data warehouses. Trade-offs include harder data maintenance (must update redundant copies consistently) and increased storage. Denormalization should be considered after profiling shows JOIN cost is a bottleneck."
+    ],
+    "keywords": ["denormalization", "performance", "redundancy", "read-heavy", "data warehouse"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Compare DROP, DELETE, and TRUNCATE commands in SQL.",
+    "answers": [
+      "DROP TABLE permanently removes the entire table structure and all its data from the database — it is a DDL command with an implicit commit, and the action is irreversible. TRUNCATE TABLE removes all rows quickly without logging individual deletions — it is a DDL command that resets the table; faster than DELETE but cannot filter rows and typically cannot be rolled back. DELETE is a DML command that removes specific rows based on a WHERE condition, logs each deletion, and can be rolled back within a transaction."
+    ],
+    "keywords": ["DROP", "DELETE", "TRUNCATE", "DDL", "DML"],
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the difference between a full join and an inner join?",
+    "answers": [
+      "An INNER JOIN returns only rows where there is a matching record in both tables based on the join condition — non-matching rows from either table are excluded. A FULL OUTER JOIN (full join) returns all rows from both tables: matching rows are combined, and non-matching rows from each table are included with NULL values in the columns from the other table. Use INNER JOIN for intersection; use FULL OUTER JOIN when you need all records from both tables regardless of matches."
+    ],
+    "keywords": ["inner join", "full outer join", "NULL", "matching rows", "SQL join"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a prepared statement and why use one?",
+    "answers": [
+      "A prepared statement is a pre-compiled SQL query template with placeholders for parameters. The SQL logic is parsed and compiled once; only the parameter values change at execution time. Benefits: (1) Security — prevents SQL injection by treating parameters as literal values, not executable code; (2) Performance — for repeated executions, the query is only compiled once; (3) Readability — SQL structure is separated from data. Prepared statements are essential whenever user input is incorporated into queries."
+    ],
+    "keywords": ["prepared statement", "SQL injection", "parameterized query", "security", "performance"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the N+1 query problem and how do you solve it?",
+    "answers": [
+      "The N+1 problem occurs when fetching a list of N parent records and then executing one additional query per record to fetch related child records — resulting in N+1 total queries instead of 1 or 2. Example: fetching all Orders (1 query) then fetching LineItems for each Order (N queries). Solutions include: using JOIN to retrieve all data in one query, eager loading in ORMs (explicit prefetching of related entities), lazy loading (with caution), data projection (selecting only needed fields), and pagination."
+    ],
+    "keywords": ["N+1", "eager loading", "lazy loading", "ORM", "JOIN"],
+    "difficulty": "hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Explain GROUP BY and HAVING clauses in SQL.",
+    "answers": [
+      "GROUP BY groups rows sharing the same values in specified columns into summary rows and is used with aggregate functions (COUNT, SUM, AVG, MAX, MIN) to compute values per group. HAVING filters the grouped results — it is like a WHERE clause but applied after grouping, allowing conditions on aggregate values (e.g., HAVING AVG(salary) > 50000). WHERE filters rows before grouping; HAVING filters groups after aggregation. Both can be used in the same query."
+    ],
+    "keywords": ["GROUP BY", "HAVING", "aggregate", "filtering", "WHERE"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What are indexes in databases and how do they work?",
+    "answers": [
+      "An index is a data structure (typically a B-Tree or Hash table) that stores a sorted copy of column values with pointers to corresponding table rows, enabling fast data retrieval without scanning every row. Types include B-Tree (general purpose, supports ranges and equality), Hash (exact-match lookups), Full-text (text search), and Bitmap (low-cardinality columns). Trade-off: indexes speed up reads but slow down writes (INSERT/UPDATE/DELETE must also update the index). Indexes should be created on frequently queried and filtered columns."
+    ],
+    "keywords": ["index", "B-Tree", "hash", "query optimization", "read performance"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "How would you find duplicate records in a SQL table?",
+    "answers": [
+      "Using GROUP BY with HAVING: SELECT col1, col2, COUNT(*) FROM table GROUP BY col1, col2 HAVING COUNT(*) > 1; — groups rows by specified columns and returns groups with more than one occurrence. Using ROW_NUMBER(): WITH cte AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY col1, col2 ORDER BY id) AS rn FROM table) SELECT * FROM cte WHERE rn > 1; — assigns a row number within each partition, then selects rows with rn > 1."
+    ],
+    "keywords": ["duplicates", "GROUP BY", "HAVING", "ROW_NUMBER", "COUNT"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a stored procedure in SQL?",
+    "answers": [
+      "A stored procedure is a named, precompiled set of SQL statements saved and executed on the database server. It accepts input and output parameters, can contain control flow logic (IF, LOOP, etc.), and returns results or modifies data. Benefits: performance (compiled once and cached), reduced network traffic (single call replaces multiple queries), reusability, security (grant execute permission without exposing underlying tables), and centralized business logic. Drawbacks include harder version control and debugging."
+    ],
+    "keywords": ["stored procedure", "precompiled", "SQL server", "parameters", "reusability"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a trigger in SQL?",
+    "answers": [
+      "A trigger is a database object that automatically fires in response to specific events (INSERT, UPDATE, or DELETE) on a table or view. Triggers are used to enforce business rules, maintain audit logs, synchronize tables, or validate data beyond check constraints. They can be BEFORE or AFTER the triggering event, and FOR EACH ROW or once per statement. While powerful, overuse of triggers can make behavior implicit and harder to debug."
+    ],
+    "keywords": ["trigger", "INSERT", "UPDATE", "DELETE", "automatic"],
+    "difficulty": "medium",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is a view in SQL?",
+    "answers": [
+      "A view is a virtual table defined by a stored SQL query. It does not store data itself but presents a dynamic result set derived from underlying tables. Views simplify complex queries by abstracting them behind a named interface, provide security by restricting access to specific columns or rows, and can present derived or aggregated data. Updatable views allow DML operations that propagate to the base tables (with restrictions). Materialized views store results physically for better read performance."
+    ],
+    "keywords": ["view", "virtual table", "SQL query", "abstraction", "security"],
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is concurrency control in DBMS?",
+    "answers": [
+      "Concurrency control manages simultaneous access to a database by multiple transactions to ensure data integrity and avoid conflicts. Two main approaches: Pessimistic (locking) — transactions acquire locks before accessing data; Optimistic (versioning) — transactions proceed without locks and check for conflicts at commit. Lock types include Shared locks (multiple readers allowed) and Exclusive locks (only one writer, blocks all others). Isolation levels (Read Uncommitted, Read Committed, Repeatable Read, Serializable) define the degree of isolation."
+    ],
+    "keywords": ["concurrency", "locking", "shared lock", "exclusive lock", "isolation level"],
+    "difficulty": "hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the maximum sum subarray problem and how do you solve it?",
+    "answers": [
+      "Kadane's Algorithm solves this in O(n) time and O(1) space. Iterate through the array, maintaining a running sum (currSum) and the overall maximum (maxSum). At each element, decide whether to extend the current subarray or start fresh: currSum = max(num, currSum + num). Update maxSum = max(maxSum, currSum). This works because any prefix with a negative sum will only hurt future totals, so we reset whenever the running sum drops below the current element.",
+      "function maxSubArray(nums) { let maxSum = nums[0], currSum = 0; for (let n of nums) { currSum = Math.max(n, currSum + n); maxSum = Math.max(maxSum, currSum); } return maxSum; }"
+    ],
+    "keywords": ["Kadane's algorithm", "dynamic programming", "subarray", "greedy", "O(n)"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you solve the Two Sum problem?",
+    "answers": [
+      "Use a HashMap for O(n) time complexity. For each element, check if (target - currentElement) exists in the map. If it does, return both indices. Otherwise, store the current element and its index in the map. This avoids the O(n²) brute-force approach of nested loops.",
+      "function twoSum(nums, target) { const map = new Map(); for (let i = 0; i < nums.length; i++) { if (map.has(target - nums[i])) return [map.get(target - nums[i]), i]; map.set(nums[i], i); } }"
+    ],
+    "keywords": ["HashMap", "two sum", "complement", "O(n)", "index"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you detect a cycle in a linked list?",
+    "answers": [
+      "Floyd's Cycle Detection Algorithm (two-pointer technique): use a slow pointer (moves 1 step) and a fast pointer (moves 2 steps). If there is a cycle, the two pointers will eventually meet. If fast reaches null, there is no cycle. Time complexity: O(n); Space complexity: O(1).",
+      "function hasCycle(head) { let slow = head, fast = head; while (fast && fast.next) { slow = slow.next; fast = fast.next.next; if (slow === fast) return true; } return false; }"
+    ],
+    "keywords": ["Floyd's algorithm", "two pointers", "cycle detection", "linked list", "O(1) space"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you find the middle of a linked list?",
+    "answers": [
+      "Use the slow and fast pointer technique (Floyd's algorithm). The slow pointer moves one step at a time; the fast pointer moves two steps. When the fast pointer reaches the end of the list, the slow pointer is at the middle node. Time complexity: O(n); Space complexity: O(1). For even-length lists, this returns the second of the two middle nodes.",
+      "function middleNode(head) { let slow = head, fast = head; while (fast && fast.next) { slow = slow.next; fast = fast.next.next; } return slow; }"
+    ],
+    "keywords": ["slow fast pointer", "linked list", "middle node", "two pointers", "O(n)"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you find the best time to buy and sell stock (one transaction)?",
+    "answers": [
+      "Track the minimum price seen so far and the maximum profit achievable. Iterate once through prices: update the minimum if the current price is lower; otherwise compute profit as current price minus minimum and update the max profit. O(n) time, O(1) space.",
+      "function maxProfit(prices) { let min = prices[0], profit = 0; for (let p of prices) { min = Math.min(min, p); profit = Math.max(profit, p - min); } return profit; }"
+    ],
+    "keywords": ["greedy", "buy sell stock", "minimum price", "single pass", "O(n)"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you move all zeroes to the end of an array in-place?",
+    "answers": [
+      "Use a two-pointer / write-index approach. Iterate through the array with a pointer idx. Whenever a non-zero element is found, place it at index idx and increment idx. After the loop, fill all remaining positions from idx to end with zeros. This preserves the relative order of non-zero elements and requires O(1) extra space.",
+      "function moveZeroes(nums) { let idx = 0; for (let n of nums) { if (n !== 0) nums[idx++] = n; } while (idx < nums.length) nums[idx++] = 0; }"
+    ],
+    "keywords": ["two pointer", "in-place", "array", "zero", "O(1) space"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you find the first non-repeating character in a string?",
+    "answers": [
+      "Two-pass approach using a frequency map: First pass — count occurrences of each character. Second pass — return the index of the first character whose count is 1. Time complexity: O(n); Space complexity: O(1) since the character set is fixed.",
+      "function firstUniqueChar(s) { const count = {}; for (let c of s) count[c] = (count[c] || 0) + 1; for (let i = 0; i < s.length; i++) { if (count[s[i]] === 1) return i; } return -1; }"
+    ],
+    "keywords": ["frequency map", "hash map", "string", "unique character", "O(n)"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "How do you rotate a matrix 90 degrees clockwise in-place?",
+    "answers": [
+      "Two-step process for an n×n matrix: (1) Transpose the matrix — swap matrix[i][j] with matrix[j][i] for all i < j; (2) Reverse each row. This achieves a 90° clockwise rotation in O(n²) time and O(1) space, with no additional matrix required.",
+      "function rotate(matrix) { const n = matrix.length; for (let i = 0; i < n; i++) for (let j = i; j < n; j++) [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]]; for (let row of matrix) row.reverse(); }"
+    ],
+    "keywords": ["matrix rotation", "transpose", "reverse", "in-place", "O(n²)"],
+    "difficulty": "medium",
+    "topic": "DSA"
+  },
+  {
+    "question": "What is binary search and how do you implement it?",
+    "answers": [
+      "Binary search efficiently finds a target value in a sorted array by repeatedly halving the search space. Compare the target with the middle element: if equal, return the index; if the target is smaller, search the left half; if larger, search the right half. Time complexity: O(log n). It can be implemented iteratively or recursively.",
+      "function binarySearch(arr, value, start, end) { if (start > end) return -1; let mid = Math.floor((start + end) / 2); if (arr[mid] === value) return mid; if (arr[mid] > value) return binarySearch(arr, value, start, mid - 1); return binarySearch(arr, value, mid + 1, end); }"
+    ],
+    "keywords": ["binary search", "sorted array", "divide and conquer", "O(log n)", "mid"],
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "What is an LRU Cache and how would you implement it?",
+    "answers": [
+      "An LRU (Least Recently Used) Cache evicts the least recently accessed item when the cache is full. Implementation uses a HashMap for O(1) key-value access combined with a Doubly Linked List to track usage order (most recent at head, least recent at tail). get(key): if key exists, move node to head and return value; else return -1. put(key, value): if key exists, update and move to head; else insert at head. If over capacity, remove tail node and its map entry. All operations are O(1)."
+    ],
+    "keywords": ["LRU cache", "HashMap", "doubly linked list", "O(1)", "eviction"],
+    "difficulty": "hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "What are microtasks vs macrotasks in JavaScript?",
+    "answers": [
+      "JavaScript's event loop processes tasks in two queues. Macrotasks (task queue) include setTimeout, setInterval, and I/O events — scheduled for the next event loop iteration. Microtasks (microtask queue) include Promise callbacks (.then/.catch) and queueMicrotask — processed immediately after the current synchronous code and before the next macrotask. This is why Promise.resolve().then(() => console.log('micro')) logs before setTimeout(() => console.log('macro'), 0) even with 0ms delay."
+    ],
+    "keywords": ["microtask", "macrotask", "event loop", "promise", "setTimeout"],
+    "difficulty": "hard",
+    "topic": "Web Development"
+  },
+  {
+    "question": "What causes memory leaks in JavaScript and how do you detect them?",
+    "answers": [
+      "Common causes of memory leaks: global variables that accumulate data, forgotten timers (setInterval not cleared), event listeners not removed when elements are destroyed, closures holding references to large objects, and detached DOM nodes still referenced in JavaScript. Detection: use browser DevTools Memory tab — take heap snapshots before and after suspected leak scenarios and compare; use the Allocation instrumentation timeline. A steady increase in heap size over time without GC recovery is a red flag."
+    ],
+    "keywords": ["memory leak", "garbage collection", "event listener", "heap snapshot", "DevTools"],
+    "difficulty": "hard",
+    "topic": "Web Development"
+  }
+]

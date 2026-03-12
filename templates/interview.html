@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>AI Interview</title>
+
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+
+</head>
+
+<body>
+
+<h1>Mock Interview</h1>
+
+<video id="video" width="400" autoplay></video>
+
+<form method="POST" action="/submit">
+
+{% for q in questions %}
+
+<div>
+
+<h3>{{ loop.index }}. {{ q.question }}</h3>
+
+<textarea name="q{{loop.index}}" rows="4" cols="50"></textarea>
+
+</div>
+
+{% endfor %}
+
+<button type="submit">Submit Interview</button>
+
+</form>
+
+</body>
+</html>

@@ -16,6 +16,7 @@ The platform analyzes answers using keyword matching and semantic similarity tec
 
 * Interactive mock interview sessions
 * Topic-based interview questions (DSA, OOP, DBMS, OS, etc.)
+* Webcam response recording
 * AI-powered answer evaluation
 * Keyword and semantic similarity scoring
 * Topic-wise performance analysis
@@ -60,23 +61,24 @@ ai-interview-system
 
 app.py
 questions.json
-evaluator.py
+
+engine
+   question_engine.py
+   evaluator.py
 
 templates
-
-* home.html
-* setup.html
-* interview.html
-* result.html
+   home.html
+   interview.html
+   result.html
 
 static
+   css
+   js
+      camera.js
 
-* css
-* js
-
-utils
-
-* question_selector.py
+responses
+   responses.json
+   videos
 
 ---
 
