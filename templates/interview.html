@@ -1,36 +1,731 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Interview · AceInterview AI</title>
+  <script src="{{ url_for('static', filename='js/camera.js') }}" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cyan:   #00f5ff;
+      --purple: #a855f7;
+      --pink:   #f0abfc;
+      --dark:   #020817;
+      --dark2:  #0a0f1e;
+      --dark3:  #0d1530;
+      --glass:  rgba(255,255,255,0.04);
+      --glass-b:rgba(0,245,255,0.06);
+      --border: rgba(0,245,255,0.15);
+      --text:   #e2e8f0;
+      --muted:  #64748b;
+    }
 
-<title>AI Interview</title>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: none;
+    }
 
+    /* ── CURSOR ── */
+    .cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--cyan); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+    }
+    .cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1.5px solid rgba(0,245,255,0.45); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width .25s, height .25s, border-color .25s;
+    }
+
+    /* ── BG CANVAS ── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      z-index: 0; pointer-events: none; opacity: 0.6;
+    }
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 1;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 2;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      backdrop-filter: blur(16px);
+      background: rgba(2,8,23,0.8);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem; font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-right {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .session-badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--cyan);
+      background: rgba(0,245,255,0.07);
+      border: 1px solid rgba(0,245,255,0.2);
+      border-radius: 100px; padding: 5px 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .badge-live {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* progress bar at top */
+    .progress-bar-track {
+      position: fixed; top: 65px; left: 0; right: 0; z-index: 199;
+      height: 2px; background: rgba(255,255,255,0.05);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      width: 0%;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrapper {
+      position: relative; z-index: 10;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 0;
+      min-height: 100vh;
+      padding-top: 67px;
+    }
+
+    /* ── LEFT PANEL — CAMERA ── */
+    .camera-panel {
+      position: sticky; top: 67px;
+      height: calc(100vh - 67px);
+      background: var(--dark2);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 28px 24px;
+      gap: 20px;
+      overflow: hidden;
+    }
+    .panel-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 3px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-label::before {
+      content: ''; display: block;
+      width: 20px; height: 1px; background: var(--muted);
+    }
+
+    .video-frame {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      aspect-ratio: 4/3;
+    }
+    #video {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transform: scaleX(-1); /* mirror */
+    }
+    /* corner brackets */
+    .video-frame::before, .video-frame::after,
+    .corner-br, .corner-bl {
+      content: ''; position: absolute;
+      width: 18px; height: 18px;
+      z-index: 2; pointer-events: none;
+    }
+    .video-frame::before {
+      top: 8px; left: 8px;
+      border-top: 2px solid var(--cyan);
+      border-left: 2px solid var(--cyan);
+    }
+    .video-frame::after {
+      top: 8px; right: 8px;
+      border-top: 2px solid var(--cyan);
+      border-right: 2px solid var(--cyan);
+    }
+    .corner-br {
+      bottom: 8px; right: 8px;
+      border-bottom: 2px solid var(--cyan);
+      border-right: 2px solid var(--cyan);
+    }
+    .corner-bl {
+      bottom: 8px; left: 8px;
+      border-bottom: 2px solid var(--cyan);
+      border-left: 2px solid var(--cyan);
+    }
+    /* scan sweep */
+    .video-scan {
+      position: absolute; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0.6;
+      animation: scanSweep 3s linear infinite;
+      z-index: 3;
+    }
+    @keyframes scanSweep {
+      0%   { top: 0%; }
+      100% { top: 100%; }
+    }
+    .rec-dot {
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); border-radius: 100px;
+      padding: 4px 10px; z-index: 4;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; color: #ff4545; letter-spacing: 2px;
+    }
+    .rec-circle {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #ff4545;
+      box-shadow: 0 0 6px #ff4545;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    /* Question navigator */
+    .q-nav-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem; font-weight: 700;
+      color: #fff; letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .q-dots {
+      display: flex; flex-wrap: wrap; gap: 7px;
+    }
+    .q-dot {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem; color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none;
+      transition: all 0.2s;
+    }
+    .q-dot.answered {
+      background: rgba(0,245,255,0.12);
+      border-color: rgba(0,245,255,0.4);
+      color: var(--cyan);
+    }
+    .q-dot.current {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      border-color: transparent;
+      color: var(--dark);
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0,245,255,0.4);
+    }
+
+    /* Timer */
+    .timer-block {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+      text-align: center;
+      margin-top: auto;
+    }
+    .timer-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .timer-display {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* ── RIGHT PANEL — QUESTIONS ── */
+    .questions-panel {
+      padding: 36px 48px 80px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+
+    .panel-header {
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      letter-spacing: 3px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .panel-header-label::before {
+      content: ''; display: block;
+      width: 24px; height: 1px; background: var(--cyan);
+    }
+    .panel-header h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem; font-weight: 900;
+      color: #fff; line-height: 1.15;
+    }
+    .panel-header h1 span {
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .panel-header p {
+      color: var(--muted); font-size: 0.92rem;
+      line-height: 1.6; margin-top: 10px;
+    }
+
+    /* Question Card */
+    .question-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 30px;
+      margin-bottom: 20px;
+      position: relative;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: cardSlideIn 0.5s ease both;
+    }
+    .question-card:nth-child(n) { animation-delay: calc(var(--i, 0) * 0.04s); }
+    @keyframes cardSlideIn {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .question-card:focus-within {
+      border-color: rgba(0,245,255,0.4);
+      box-shadow: 0 0 30px rgba(0,245,255,0.06);
+    }
+    .question-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      border-radius: 14px 14px 0 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .question-card:focus-within::before { opacity: 1; }
+
+    .q-header {
+      display: flex; align-items: flex-start; gap: 16px;
+      margin-bottom: 18px;
+    }
+    .q-number {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--dark);
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(0,245,255,0.3);
+    }
+    .q-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.05rem; font-weight: 600;
+      color: #fff; line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    .q-textarea {
+      width: 100%; min-height: 110px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.95rem; line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+    .q-textarea::placeholder { color: var(--muted); }
+    .q-textarea:focus {
+      border-color: rgba(0,245,255,0.35);
+      box-shadow: 0 0 0 3px rgba(0,245,255,0.06);
+    }
+
+    .q-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .char-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .char-count span { color: var(--cyan); }
+    .answered-check {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 1px;
+      display: flex; align-items: center; gap: 6px;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .answered-check.show { opacity: 1; color: var(--cyan); }
+    .check-icon { font-size: 0.8rem; }
+
+    /* ── SUBMIT SECTION ── */
+    .submit-section {
+      margin-top: 16px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px 30px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 24px;
+      flex-wrap: wrap;
+    }
+    .submit-info h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 800;
+      color: #fff; margin-bottom: 6px;
+    }
+    .submit-info p {
+      color: var(--muted); font-size: 0.85rem; line-height: 1.5;
+    }
+    .submit-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 36px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: var(--dark); border: none;
+      border-radius: 6px; cursor: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      position: relative; overflow: hidden;
+      transition: box-shadow 0.3s, transform 0.2s;
+      box-shadow: 0 0 28px rgba(0,245,255,0.25);
+      white-space: nowrap;
+    }
+    .submit-btn:hover {
+      box-shadow: 0 0 50px rgba(0,245,255,0.5), 0 0 80px rgba(168,85,247,0.2);
+      transform: translateY(-2px);
+    }
+    .submit-btn .arrow { transition: transform 0.3s; }
+    .submit-btn:hover .arrow { transform: translateX(5px); }
+
+    /* completion indicator */
+    .completion-ring {
+      position: relative; width: 52px; height: 52px; flex-shrink: 0;
+    }
+    .completion-ring svg { width: 52px; height: 52px; transform: rotate(-90deg); }
+    .ring-bg2 { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
+    .ring-prog {
+      fill: none;
+      stroke: url(#rg2);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 138;
+      stroke-dashoffset: 138;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+    .ring-pct2 {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem; font-weight: 700;
+      color: var(--cyan);
+    }
+
+    /* ── MEDIA QUERIES ── */
+    @media (max-width: 900px) {
+      .page-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .camera-panel {
+        position: relative; top: auto;
+        height: auto; border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row; flex-wrap: wrap;
+        padding: 20px;
+      }
+      .video-frame { width: 220px; aspect-ratio: 4/3; flex-shrink: 0; }
+      .timer-block { margin-top: 0; }
+      .questions-panel { padding: 28px 20px 60px; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 14px 20px; }
+      .questions-panel { padding: 20px 14px 60px; }
+      .question-card { padding: 20px; }
+      .submit-section { flex-direction: column; }
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>Mock Interview</h1>
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-<video id="video" width="400" autoplay></video>
+<!-- BG -->
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="scanline"></div>
 
-<form method="POST" action="/submit">
-
-{% for q in questions %}
-
-<div>
-
-<h3>{{ loop.index }}. {{ q.question }}</h3>
-
-<textarea name="q{{loop.index}}" rows="4" cols="50"></textarea>
-
+<!-- PROGRESS BAR -->
+<div class="progress-bar-track">
+  <div class="progress-bar-fill" id="progressFill"></div>
 </div>
 
-{% endfor %}
+<!-- NAVBAR -->
+<nav>
+  <a href="/" class="logo">AceInterview AI</a>
+  <div class="nav-right">
+    <div class="session-badge">
+      <div class="badge-live"></div>
+      Session Active
+    </div>
+  </div>
+</nav>
 
-<button type="submit">Submit Interview</button>
+<!-- MAIN LAYOUT -->
+<div class="page-wrapper">
 
-</form>
+  <!-- LEFT: CAMERA PANEL -->
+  <aside class="camera-panel">
 
+    <p class="panel-label">Live Feed</p>
+
+    <div class="video-frame">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="video-scan"></div>
+      <div class="corner-br"></div>
+      <div class="corner-bl"></div>
+      <div class="rec-dot"><div class="rec-circle"></div> REC</div>
+    </div>
+
+    <div>
+      <div class="q-nav-label">Question Navigator</div>
+      <div style="margin-bottom:8px;font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);letter-spacing:1px;">Click to jump to any question</div>
+      <div class="q-dots" id="qDots"></div>
+    </div>
+
+    <div class="timer-block">
+      <div class="timer-label">Session Time</div>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT: QUESTIONS PANEL -->
+  <main class="questions-panel">
+
+    <div class="panel-header">
+      <p class="panel-header-label">Mock Interview</p>
+      <h1>Answer <span>Thoughtfully</span></h1>
+      <p>Take your time with each question. Write clearly and cover the key concepts — your answer will be evaluated for both accuracy and keyword coverage.</p>
+    </div>
+
+    <form method="POST" action="/submit" id="interviewForm">
+
+      {% for q in questions %}
+      <div class="question-card" style="--i:{{ loop.index }}" id="card-{{ loop.index }}">
+        <div class="q-header">
+          <div class="q-number">{{ '%02d'|format(loop.index) }}</div>
+          <div class="q-text">{{ q.question }}</div>
+        </div>
+        <textarea
+          class="q-textarea"
+          name="q{{ loop.index }}"
+          rows="4"
+          placeholder="Type your answer here… be specific and concise."
+          data-index="{{ loop.index }}"
+          id="ans-{{ loop.index }}"
+        ></textarea>
+        <div class="q-footer">
+          <div class="char-count"><span id="cc-{{ loop.index }}">0</span> characters</div>
+          <div class="answered-check" id="chk-{{ loop.index }}">
+            <span class="check-icon">✦</span> Answered
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="submit-section">
+        <div class="completion-ring">
+          <svg viewBox="0 0 52 52">
+            <defs>
+              <linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00f5ff"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg2" cx="26" cy="26" r="22"/>
+            <circle class="ring-prog" cx="26" cy="26" r="22" id="ringProg"/>
+          </svg>
+          <div class="ring-pct2" id="ringPct">0%</div>
+        </div>
+
+        <div class="submit-info">
+          <h3>Ready to Submit?</h3>
+          <p>Make sure you've answered all questions. Your session recording and text answers will be evaluated by the AI system.</p>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          Submit Interview <span class="arrow">→</span>
+        </button>
+      </div>
+
+    </form>
+  </main>
+</div>
+
+<script>
+/* ── CURSOR ── */
+const cur  = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function tick(){
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(tick);
+})();
+
+/* ── PARTICLE BG ── */
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
+resize(); window.addEventListener('resize',resize);
+const PARTS=60;
+const pts=Array.from({length:PARTS},()=>({
+  x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+  vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+  r:Math.random()*1.5+.4,
+  alpha:Math.random()*.4+.1,
+  hue:Math.random()>.5?185:270
+}));
+function animBg(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1;
+    if(p.y<0||p.y>H)p.vy*=-1;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${p.hue},100%,65%,${p.alpha})`; ctx.fill();
+  });
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+    const d=Math.hypot(dx,dy);
+    if(d<110){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
+      ctx.strokeStyle=`hsla(185,100%,65%,${(1-d/110)*0.12})`; ctx.lineWidth=.5; ctx.stroke(); }
+  }
+  requestAnimationFrame(animBg);
+}
+animBg();
+
+/* ── QUESTION LOGIC ── */
+const textareas = document.querySelectorAll('.q-textarea');
+const totalQ    = textareas.length;
+const dotsWrap  = document.getElementById('qDots');
+const progress  = document.getElementById('progressFill');
+const ringProg  = document.getElementById('ringProg');
+const ringPct   = document.getElementById('ringPct');
+const CIRC      = 2 * Math.PI * 22; // r=22
+
+// Build nav dots
+textareas.forEach((ta, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'q-dot';
+  dot.textContent = i + 1;
+  dot.id = `dot-${i+1}`;
+  dot.addEventListener('click', () => {
+    document.getElementById(`card-${i+1}`)
+      .scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  dotsWrap.appendChild(dot);
+});
+
+let answeredSet = new Set();
+
+function updateCompletion() {
+  const pct = Math.round((answeredSet.size / totalQ) * 100);
+  progress.style.width = pct + '%';
+  ringProg.style.strokeDashoffset = CIRC - (CIRC * pct / 100);
+  ringPct.textContent = pct + '%';
+}
+
+textareas.forEach(ta => {
+  const idx  = ta.dataset.index;
+  const dot  = document.getElementById(`dot-${idx}`);
+  const cc   = document.getElementById(`cc-${idx}`);
+  const chk  = document.getElementById(`chk-${idx}`);
+
+  // mark current on focus
+  ta.addEventListener('focus', () => {
+    document.querySelectorAll('.q-dot').forEach(d => d.classList.remove('current'));
+    dot.classList.add('current');
+  });
+  ta.addEventListener('blur', () => dot.classList.remove('current'));
+
+  ta.addEventListener('input', () => {
+    const val = ta.value.trim();
+    cc.textContent = ta.value.length;
+
+    if (val.length >= 10) {
+      answeredSet.add(idx);
+      dot.classList.add('answered');
+      chk.classList.add('show');
+    } else {
+      answeredSet.delete(idx);
+      dot.classList.remove('answered');
+      chk.classList.remove('show');
+    }
+    updateCompletion();
+  });
+});
+
+updateCompletion();
+
+/* ── TIMER ── */
+let secs = 0;
+setInterval(() => {
+  secs++;
+  const m = String(Math.floor(secs/60)).padStart(2,'0');
+  const s = String(secs%60).padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+}, 1000);
+</script>
 </body>
 </html>

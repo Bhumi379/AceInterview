@@ -1,18 +1,991 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>AceInterview</title>
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AceInterview AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cyan:    #00f5ff;
+      --purple:  #a855f7;
+      --pink:    #f0abfc;
+      --dark:    #020817;
+      --dark2:   #0a0f1e;
+      --dark3:   #0d1530;
+      --glass:   rgba(255,255,255,0.04);
+      --glass-b: rgba(0,245,255,0.08);
+      --border:  rgba(0,245,255,0.18);
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--cyan); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s, opacity 0.3s;
+      box-shadow: 0 0 12px var(--cyan), 0 0 24px var(--cyan);
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1.5px solid rgba(0,245,255,0.5); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.18s ease, width 0.25s, height 0.25s;
+    }
+    body:has(.btn-login:hover) .cursor-ring,
+    body:has(.start-btn:hover) .cursor-ring {
+      width: 60px; height: 60px;
+      border-color: var(--purple);
+    }
+
+    /* ── CANVAS BG ── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* ── GRID OVERLAY ── */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 1;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* ── SCAN LINE ── */
+    .scanline {
+      position: fixed; inset: 0; z-index: 2;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      animation: scanMove 12s linear infinite;
+    }
+    @keyframes scanMove {
+      0%   { background-position: 0 0; }
+      100% { background-position: 0 100vh; }
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      backdrop-filter: blur(16px);
+      background: rgba(2,8,23,0.75);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.35rem; font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo span { color: var(--cyan); -webkit-text-fill-color: var(--cyan); }
+
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem; color: var(--muted);
+      text-decoration: none; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .btn-login {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1.5px solid var(--cyan);
+      color: var(--cyan);
+      border-radius: 3px;
+      cursor: none;
+      position: relative; overflow: hidden;
+      transition: color 0.3s, box-shadow 0.3s;
+    }
+    .btn-login::before {
+      content: ''; position: absolute;
+      inset: 0; background: var(--cyan);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+    .btn-login:hover { color: var(--dark); box-shadow: 0 0 24px var(--cyan); }
+    .btn-login:hover::before { transform: scaleX(1); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--glass-b);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 18px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; color: var(--cyan);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeDown 0.8s ease both;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%; background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; } 50% { opacity:0.2; }
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+    .title-line1 { color: #fff; }
+    .title-line2 {
+      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+      background-size: 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+    }
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% }
+      50%      { background-position: 100% }
+    }
+
+    /* Glitch effect on hover */
+    .glitch-wrap { position: relative; display: inline-block; }
+    .glitch-wrap:hover .title-line2 { animation: glitch 0.4s steps(2) both, gradientShift 4s ease infinite; }
+    @keyframes glitch {
+      0%  { text-shadow: 2px 0 var(--cyan), -2px 0 var(--purple); }
+      25% { text-shadow: -3px 0 var(--pink), 3px 0 var(--cyan); clip-path: inset(10% 0 80% 0); }
+      50% { text-shadow: 3px 0 var(--purple), -3px 0 var(--pink); }
+      75% { text-shadow: -2px 0 var(--cyan); clip-path: inset(60% 0 10% 0); }
+      100%{ text-shadow: none; clip-path: none; }
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted); max-width: 580px;
+      line-height: 1.7; font-weight: 400;
+      margin-bottom: 52px;
+      animation: fadeUp 0.9s 0.4s ease both;
+    }
+
+    .hero-cta {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s 0.6s ease both;
+    }
+
+    .start-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: var(--dark); border: none;
+      border-radius: 4px; cursor: none;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+      position: relative; overflow: hidden;
+      transition: box-shadow 0.3s, transform 0.2s;
+      box-shadow: 0 0 30px rgba(0,245,255,0.3);
+    }
+    .start-btn:hover {
+      box-shadow: 0 0 50px rgba(0,245,255,0.55), 0 0 100px rgba(168,85,247,0.25);
+      transform: translateY(-2px);
+    }
+    .start-btn .arrow {
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+    .start-btn:hover .arrow { transform: translateX(5px); }
+
+    .ghost-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 40px;
+      background: transparent;
+      color: var(--text); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px; cursor: none;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .ghost-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+    /* ── STATS ── */
+    .hero-stats {
+      display: flex; gap: 60px; flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 72px;
+      animation: fadeUp 0.9s 0.8s ease both;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      font-size: 0.78rem; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      font-family: 'Share Tech Mono', monospace;
+      margin-top: 4px;
+    }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      animation: fadeUp 1s 1.2s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity:1; transform: scaleY(1); }
+      50%      { opacity:0.3; transform: scaleY(0.6); }
+    }
+
+    /* ── SECTION BASE ── */
+    section {
+      position: relative; z-index: 10;
+      padding: 100px 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; color: var(--cyan);
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::before {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--cyan);
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800; color: #fff;
+      line-height: 1.2; margin-bottom: 20px;
+    }
+    .section-desc {
+      color: var(--muted); font-size: 1.05rem;
+      line-height: 1.7; max-width: 560px;
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px; margin-top: 64px;
+    }
+    .feature-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .feature-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .feature-card:hover { border-color: rgba(0,245,255,0.4); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,245,255,0.08); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      font-size: 2.2rem; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center;
+      width: 60px; height: 60px;
+      background: var(--glass-b);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .feature-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700;
+      color: #fff; margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .feature-desc {
+      color: var(--muted); font-size: 0.92rem;
+      line-height: 1.65;
+    }
+    .feature-tag {
+      display: inline-block; margin-top: 18px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--cyan);
+      background: rgba(0,245,255,0.07);
+      border: 1px solid rgba(0,245,255,0.2);
+      border-radius: 100px; padding: 3px 12px;
+      letter-spacing: 1.5px;
+    }
+    /* color variants */
+    .card-purple .feature-tag { color: var(--purple); background: rgba(168,85,247,0.07); border-color: rgba(168,85,247,0.2); }
+    .card-purple .feature-icon { border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.08); }
+    .card-purple:hover { border-color: rgba(168,85,247,0.4); box-shadow: 0 20px 60px rgba(168,85,247,0.08); }
+    .card-purple::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+    .card-pink .feature-tag { color: var(--pink); background: rgba(240,171,252,0.07); border-color: rgba(240,171,252,0.2); }
+    .card-pink .feature-icon { border-color: rgba(240,171,252,0.3); background: rgba(240,171,252,0.08); }
+    .card-pink:hover { border-color: rgba(240,171,252,0.4); box-shadow: 0 20px 60px rgba(240,171,252,0.08); }
+    .card-pink::before { background: linear-gradient(90deg, transparent, var(--pink), transparent); }
+
+    /* ── HOW IT WORKS ── */
+    .how-section { background: linear-gradient(180deg, transparent 0%, rgba(10,15,30,0.6) 50%, transparent 100%); }
+    .steps-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0; margin-top: 64px;
+      position: relative;
+    }
+    .steps-wrapper::before {
+      content: ''; position: absolute;
+      top: 42px; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+      z-index: 0;
+    }
+    .step-item {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; padding: 0 20px;
+      position: relative; z-index: 1;
+    }
+    .step-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 2px; color: var(--dark);
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 0 20px rgba(0,245,255,0.35);
+      position: relative;
+    }
+    .step-num::after {
+      content: ''; position: absolute;
+      inset: -4px; border-radius: 50%;
+      border: 1px solid rgba(0,245,255,0.3);
+      animation: stepPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes stepPulse {
+      0%,100% { transform: scale(1); opacity:0.6; }
+      50%      { transform: scale(1.2); opacity:0; }
+    }
+    .step-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem; font-weight: 700;
+      color: #fff; margin-bottom: 10px; letter-spacing: 0.5px;
+    }
+    .step-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+    /* ── SCORE DISPLAY ── */
+    .score-section { padding: 80px 24px; }
+    .score-inner {
+      max-width: 900px; margin: 0 auto;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 52px 48px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .score-inner::before {
+      content: ''; position: absolute;
+      top: -80px; right: -80px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168,85,247,0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .score-inner::after {
+      content: ''; position: absolute;
+      bottom: -60px; left: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,245,255,0.1), transparent 70%);
+      pointer-events: none;
+    }
+    .score-left h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem; font-weight: 800;
+      color: #fff; margin-bottom: 8px;
+    }
+    .score-left p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    .score-ring-wrap {
+      display: flex; justify-content: center; align-items: center;
+      position: relative;
+    }
+    .score-ring-svg { width: 170px; height: 170px; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+    .ring-fill {
+      fill: none;
+      stroke: url(#ringGrad);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      animation: fillRing 2s 0.5s ease forwards;
+    }
+    @keyframes fillRing {
+      to { stroke-dashoffset: 116; } /* 74% filled = 440*0.26 = ~114 */
+    }
+    .ring-label {
+      position: absolute; text-align: center;
+    }
+    .ring-pct {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.2rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .ring-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    .topic-bars { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; }
+    .bar-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; color: var(--muted);
+      width: 46px; text-align: right; letter-spacing: 0.5px;
+    }
+    .bar-track {
+      flex: 1; height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px; overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      width: 0; animation: fillBar 1.5s ease forwards;
+    }
+    .bar-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      width: 34px;
+    }
+    @keyframes fillBar { to { width: var(--w); } }
+
+    /* ── TECH STACK ── */
+    .tech-section { text-align: center; }
+    .tech-pills {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 14px;
+      margin-top: 40px;
+    }
+    .tech-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 100px; padding: 10px 22px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem; color: var(--text);
+      letter-spacing: 1px;
+      transition: border-color 0.3s, color 0.3s, box-shadow 0.3s;
+    }
+    .tech-pill:hover {
+      border-color: var(--cyan); color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0,245,255,0.1);
+    }
+    .tech-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── CTA SECTION ── */
+    .cta-section { text-align: center; padding: 120px 24px; }
+    .cta-inner {
+      max-width: 700px; margin: 0 auto;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 72px 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-inner::before {
+      content: ''; position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,245,255,0.06), transparent 60%);
+    }
+    .cta-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 900; color: #fff;
+      margin-bottom: 16px; line-height: 1.2;
+    }
+    .cta-sub { color: var(--muted); font-size: 1rem; line-height: 1.7; margin-bottom: 40px; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+      background: rgba(2,8,23,0.8);
+    }
+    .footer-brand {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .footer-info {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 1px; text-align: right;
+    }
+    .footer-info span { color: var(--cyan); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(28px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { display: none; }
+      .score-inner { grid-template-columns: 1fr; }
+      .steps-wrapper::before { display: none; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-info { text-align: center; }
+    }
+  </style>
+</head>
 <body>
 
-<h1>Welcome to AceInterview AI</h1>
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-<a href="/start">
-<button>Start Interview</button>
-</a>
+<!-- BACKGROUND -->
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="scanline"></div>
 
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">Ace<span>Interview</span> AI</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#stack">Tech Stack</a>
+    <a href="/login" class="btn-login">Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    AI-Powered · NLP Evaluation · Real-time Feedback
+  </div>
+
+  <h1 class="hero-title">
+    <div class="title-line1">Master Your</div>
+    <div class="glitch-wrap">
+      <div class="title-line2">Technical Interview</div>
+    </div>
+  </h1>
+
+  <p class="hero-sub">
+    Simulate real-world interviews with AI-driven evaluation. Get scored on technical accuracy, keyword coverage, and communication clarity — then improve with targeted feedback.
+  </p>
+
+  <div class="hero-cta">
+    <a href="/start" class="start-btn">
+      Start Interview <span class="arrow">→</span>
+    </a>
+    <a href="#features" class="ghost-btn">Explore Features</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">15+</div>
+      <div class="stat-label">Questions/Session</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Core Topics</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2x</div>
+      <div class="stat-label">Scoring Methods</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">AI Evaluated</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <p class="section-label reveal">Platform Capabilities</p>
+    <h2 class="section-title reveal">Everything you need to<br/>ace your next interview</h2>
+    <p class="section-desc reveal">From DSA to System Design — practice across all key domains with AI feedback that actually helps you grow.</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-name">AI Answer Evaluation</div>
+        <div class="feature-desc">Hybrid NLP scoring using semantic similarity (60%) and keyword coverage (40%) to evaluate how well you understand core concepts.</div>
+        <span class="feature-tag">NLP · spaCy</span>
+      </div>
+      <div class="feature-card card-purple reveal">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-name">Topic-Based Sessions</div>
+        <div class="feature-desc">Practice DSA, OOP, DBMS, OS, and more. The system picks 12–15 questions tailored to each domain automatically.</div>
+        <span class="feature-tag">5+ Topics</span>
+      </div>
+      <div class="feature-card card-pink reveal">
+        <div class="feature-icon">📹</div>
+        <div class="feature-name">Webcam Recording</div>
+        <div class="feature-desc">Record your responses as you would in a real interview. Improve body language and delivery alongside technical accuracy.</div>
+        <span class="feature-tag">Camera · JS</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📊</div>
+        <div class="feature-name">Performance Analytics</div>
+        <div class="feature-desc">View topic-wise breakdowns of your performance — identify your weak spots and track improvement over multiple sessions.</div>
+        <span class="feature-tag">Topic Scores</span>
+      </div>
+      <div class="feature-card card-purple reveal">
+        <div class="feature-icon">💬</div>
+        <div class="feature-name">Smart Feedback</div>
+        <div class="feature-desc">Get specific improvement suggestions based on your answers — not just a score. Know exactly what to study next.</div>
+        <span class="feature-tag">Personalized</span>
+      </div>
+      <div class="feature-card card-pink reveal">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-name">Instant Reports</div>
+        <div class="feature-desc">Every session generates a detailed report with your overall score, topic breakdown, and areas to focus on — immediately.</div>
+        <span class="feature-tag">Real-time</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="how-section">
+  <div class="container">
+    <p class="section-label reveal">Process</p>
+    <h2 class="section-title reveal">How AceInterview Works</h2>
+    <p class="section-desc reveal">Six simple steps from starting a session to getting actionable feedback on your performance.</p>
+
+    <div class="steps-wrapper">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Start Session</div>
+        <div class="step-desc">Choose your topic and kick off a mock interview session.</div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">02</div>
+        <div class="step-title">Get Questions</div>
+        <div class="step-desc">12–15 curated questions selected from our JSON database.</div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">03</div>
+        <div class="step-title">Record Answers</div>
+        <div class="step-desc">Answer via text while your webcam captures your response.</div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">04</div>
+        <div class="step-title">NLP Analysis</div>
+        <div class="step-desc">spaCy evaluates semantic accuracy and keyword coverage.</div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">05</div>
+        <div class="step-title">Score Computed</div>
+        <div class="step-desc">60% semantic + 40% keyword = your final answer score.</div>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">06</div>
+        <div class="step-title">Get Report</div>
+        <div class="step-desc">Full breakdown with topic scores and next-step suggestions.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCORE EXAMPLE -->
+<section class="score-section">
+  <div class="container">
+    <p class="section-label reveal">Sample Output</p>
+    <h2 class="section-title reveal">See what your report looks like</h2>
+    <br/>
+    <div class="score-inner reveal">
+
+      <div class="score-left">
+        <h3>Interview Session Report</h3>
+        <p>AI-evaluated performance breakdown across all attempted topics, with keyword and semantic scoring applied.</p>
+        <div class="topic-bars">
+          <div class="bar-row">
+            <span class="bar-label">DSA</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:78%"></div></div>
+            <span class="bar-val">78%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">OOP</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:70%; animation-delay:0.2s"></div></div>
+            <span class="bar-val">70%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">DBMS</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:65%; animation-delay:0.4s"></div></div>
+            <span class="bar-val">65%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">OS</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:80%; animation-delay:0.6s"></div></div>
+            <span class="bar-val">80%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-ring-wrap">
+        <svg class="score-ring-svg" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00f5ff"/>
+              <stop offset="100%" stop-color="#a855f7"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="80" cy="80" r="70"/>
+          <circle class="ring-fill" cx="80" cy="80" r="70"/>
+        </svg>
+        <div class="ring-label">
+          <div class="ring-pct">74%</div>
+          <div class="ring-sub">Overall</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack" class="tech-section">
+  <div class="container">
+    <p class="section-label reveal" style="justify-content:center">Built With</p>
+    <h2 class="section-title reveal">The Technology Behind AceInterview</h2>
+    <div class="tech-pills">
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#00f5ff"></div>Python</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#a855f7"></div>Flask</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#f0abfc"></div>spaCy NLP</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#00f5ff"></div>HTML5</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#a855f7"></div>Tailwind CSS</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#f0abfc"></div>JavaScript</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#00f5ff"></div>JSON Dataset</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#a855f7"></div>Webcam API</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#f0abfc"></div>Semantic Similarity</div>
+      <div class="tech-pill reveal"><div class="tech-dot" style="background:#00f5ff"></div>Keyword Matching</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner reveal">
+    <h2 class="cta-title">Ready to Ace Your Interview?</h2>
+    <p class="cta-sub">Start a free mock session right now. No setup required — just you, your knowledge, and real AI feedback.</p>
+    <a href="/start" class="start-btn" style="display:inline-flex">
+      Launch Interview <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">AceInterview AI</div>
+  <div class="footer-info">
+    Built by <span>Bhumi Sharma</span> · B.Tech IT · Banasthali Vidyapith<br/>
+    Web Development · Machine Learning · Intelligent Systems
+  </div>
+</footer>
+
+<script>
+/* ── CURSOR ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animateCursor() {
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+  ring.style.left = rx + 'px'; ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+/* ── PARTICLE CANVAS ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [], connections = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize(); window.addEventListener('resize', resize);
+
+const PARTICLE_COUNT = 90;
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x  = Math.random() * W;
+    this.y  = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.35;
+    this.vy = (Math.random() - 0.5) * 0.35;
+    this.r  = Math.random() * 1.8 + 0.5;
+    this.alpha = Math.random() * 0.5 + 0.15;
+    this.hue = Math.random() > 0.5 ? 185 : 270; // cyan or purple
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue},100%,65%,${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        const alpha = (1 - dist/120) * 0.18;
+        const hue = dist < 60 ? 185 : 270;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `hsla(${hue},100%,65%,${alpha})`;
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawConnections();
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ── SCROLL REVEAL ── */
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+/* ── COUNTER ANIMATION ── */
+function animateCounter(el, target, suffix='') {
+  let start = 0;
+  const step = target / 40;
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { el.textContent = target + suffix; clearInterval(timer); return; }
+    el.textContent = Math.floor(start) + suffix;
+  }, 35);
+}
+new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = e.target.querySelectorAll('.stat-num');
+      const data = [['15','+'],['5',''],['2','x'],['100','%']];
+      nums.forEach((el, i) => animateCounter(el, parseInt(data[i][0]), data[i][1]));
+    }
+  });
+}, { threshold: 0.5 }).observe(document.querySelector('.hero-stats'));
+</script>
 </body>
-
 </html>
