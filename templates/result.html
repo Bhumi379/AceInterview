@@ -1,5 +1,764 @@
-<h1>Interview Completed</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interview Report · AceInterview AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cyan:    #00f5ff;
+      --purple:  #a855f7;
+      --pink:    #f0abfc;
+      --green:   #22d3a0;
+      --orange:  #ffa500;
+      --red:     #ff4560;
+      --yellow:  #fbbf24;
+      --dark:    #020817;
+      --dark2:   #080f1f;
+      --dark3:   #0d1530;
+      --glass:   rgba(255,255,255,0.04);
+      --glassc:  rgba(0,245,255,0.05);
+      --border:  rgba(0,245,255,0.13);
+      --text:    #e2e8f0;
+      --muted:   #4a5568;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
 
-<p>Your responses have been recorded.</p>
+    /* ── CURSOR ── */
+    #cur  { position:fixed; width:10px; height:10px; background:var(--cyan); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan); transition:width .2s,height .2s; }
+    #ring { position:fixed; width:32px; height:32px; border:1.5px solid rgba(0,245,255,.35); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .25s,height .25s; }
 
-<p>Evaluation report will appear here.</p>
+    /* ── BG ── */
+    #bgc  { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.45; }
+    .grid { position:fixed; inset:0; z-index:1; background-image:linear-gradient(rgba(0,245,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.018) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
+    .scan { position:fixed; inset:0; z-index:2; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px); pointer-events:none; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(2,8,23,.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+    }
+    .logo { font-family:'Orbitron',monospace; font-size:1rem; font-weight:900; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; }
+    .nav-r { display:flex; align-items:center; gap:12px; }
+    .nav-pill { font-family:'Share Tech Mono',monospace; font-size:.65rem; color:var(--muted); background:var(--glass); border:1px solid var(--border); border-radius:100px; padding:5px 14px; letter-spacing:1.5px; }
+    .btn-home { font-family:'Orbitron',monospace; font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:9px 20px; background:transparent; border:1px solid var(--border); color:var(--text); border-radius:6px; cursor:none; text-decoration:none; display:flex; align-items:center; gap:7px; transition:all .3s; }
+    .btn-home:hover { border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 18px rgba(0,245,255,.1); }
+    .btn-retry { font-family:'Orbitron',monospace; font-size:.65rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:9px 20px; background:linear-gradient(135deg,var(--cyan),var(--purple)); color:var(--dark); border:none; border-radius:6px; cursor:none; text-decoration:none; display:flex; align-items:center; gap:7px; transition:box-shadow .3s; box-shadow:0 0 18px rgba(0,245,255,.2); }
+    .btn-retry:hover { box-shadow:0 0 32px rgba(0,245,255,.45); }
+
+    /* ── PAGE ── */
+    .page { position:relative; z-index:10; max-width:1100px; margin:0 auto; padding:52px 24px 100px; }
+
+    /* ── HERO RESULT ── */
+    .result-hero {
+      text-align: center;
+      padding: 0 0 60px;
+      position: relative;
+    }
+    .result-hero::after {
+      content: ''; position: absolute;
+      left: 50%; bottom: 0; transform: translateX(-50%);
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+    }
+    .report-label {
+      font-family:'Share Tech Mono',monospace; font-size:.68rem;
+      color:var(--cyan); letter-spacing:4px; text-transform:uppercase;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      margin-bottom:22px; opacity:0;
+      animation: fadeUp .7s .1s ease forwards;
+    }
+    .report-label::before,.report-label::after { content:''; display:block; width:40px; height:1px; background:var(--cyan); }
+    .result-title {
+      font-family:'Orbitron',monospace;
+      font-size:clamp(1.8rem,4vw,3rem); font-weight:900;
+      color:#fff; line-height:1.15; margin-bottom:12px;
+      opacity:0; animation: fadeUp .7s .2s ease forwards;
+    }
+    .result-title span { background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink)); background-size:200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:gradShift 5s ease infinite; }
+    @keyframes gradShift { 0%,100%{background-position:0%} 50%{background-position:100%} }
+    .result-date { font-family:'Share Tech Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:2px; opacity:0; animation:fadeUp .7s .3s ease forwards; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── SCORE CENTREPIECE ── */
+    .score-centrepiece {
+      display: flex; align-items: center; justify-content: center;
+      gap: 60px; flex-wrap: wrap;
+      padding: 64px 0 56px;
+      opacity:0; animation:fadeUp .8s .4s ease forwards;
+    }
+
+    /* Big ring */
+    .big-ring-wrap { position:relative; width:200px; height:200px; flex-shrink:0; }
+    .big-ring-svg  { width:200px; height:200px; transform:rotate(-90deg); }
+    .br-bg   { fill:none; stroke:rgba(255,255,255,.05); stroke-width:10; }
+    .br-track{ fill:none; stroke:rgba(255,255,255,.06); stroke-width:10; }
+    .br-fill {
+      fill:none; stroke:url(#bigGrad); stroke-width:10;
+      stroke-linecap:round;
+      stroke-dasharray: 565;
+      stroke-dashoffset: 565;
+      animation: fillBigRing 2s .8s cubic-bezier(.4,0,.2,1) forwards;
+      filter: drop-shadow(0 0 8px rgba(0,245,255,.5));
+    }
+    @keyframes fillBigRing { to { stroke-dashoffset: var(--offset, 141); } }
+
+    .ring-center {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .ring-score {
+      font-family:'Orbitron',monospace; font-size:3rem; font-weight:900; line-height:1;
+      background:linear-gradient(135deg,var(--cyan),var(--purple));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .ring-label { font-family:'Share Tech Mono',monospace; font-size:.6rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+
+    /* Grade badge */
+    .grade-col { display:flex; flex-direction:column; align-items:center; gap:14px; }
+    .grade-badge {
+      width:100px; height:100px; border-radius:20px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-weight:900;
+      position:relative; overflow:hidden;
+    }
+    .grade-badge::before { content:''; position:absolute; inset:0; background:inherit; filter:blur(20px); opacity:.4; transform:scale(1.5); }
+    .grade-letter { font-size:3rem; line-height:1; position:relative; z-index:1; }
+    .grade-sub    { font-size:.55rem; letter-spacing:2px; opacity:.8; position:relative; z-index:1; margin-top:2px; }
+
+    .grade-A  { background:linear-gradient(135deg,rgba(34,211,160,.2),rgba(0,245,255,.2)); border:1px solid rgba(34,211,160,.4); color:var(--green); }
+    .grade-B  { background:linear-gradient(135deg,rgba(0,245,255,.2),rgba(168,85,247,.2)); border:1px solid rgba(0,245,255,.3); color:var(--cyan); }
+    .grade-C  { background:linear-gradient(135deg,rgba(251,191,36,.2),rgba(255,165,0,.2)); border:1px solid rgba(251,191,36,.35); color:var(--yellow); }
+    .grade-D  { background:linear-gradient(135deg,rgba(255,69,96,.2),rgba(255,138,0,.2)); border:1px solid rgba(255,69,96,.3); color:var(--red); }
+
+    .grade-name { font-family:'Orbitron',monospace; font-size:.7rem; font-weight:700; color:#fff; letter-spacing:1px; }
+    .grade-desc { font-family:'Share Tech Mono',monospace; font-size:.6rem; color:var(--muted); letter-spacing:1px; text-align:center; max-width:120px; line-height:1.5; }
+
+    /* Stats row */
+    .stats-row {
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .stat-card {
+      background:var(--glass); border:1px solid var(--border); border-radius:10px;
+      padding:14px 20px; display:flex; align-items:center; gap:14px; min-width:180px;
+    }
+    .stat-icon { font-size:1.4rem; }
+    .stat-val  { font-family:'Orbitron',monospace; font-size:1.1rem; font-weight:800; color:#fff; line-height:1; }
+    .stat-key  { font-family:'Share Tech Mono',monospace; font-size:.58rem; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px; }
+
+    /* ── SECTION WRAPPER ── */
+    .section { margin-bottom:48px; opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .section.visible { opacity:1; transform:translateY(0); }
+    .sec-head { margin-bottom:24px; }
+    .sec-label { font-family:'Share Tech Mono',monospace; font-size:.65rem; color:var(--cyan); letter-spacing:3px; text-transform:uppercase; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .sec-label::before { content:''; display:block; width:24px; height:1px; background:var(--cyan); }
+    .sec-title { font-family:'Orbitron',monospace; font-size:1.25rem; font-weight:800; color:#fff; }
+
+    /* ── TOPIC BARS ── */
+    .topic-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+    .topic-card {
+      background:var(--glass); border:1px solid var(--border); border-radius:12px;
+      padding:22px 22px; position:relative; overflow:hidden;
+      transition:border-color .3s, box-shadow .3s;
+    }
+    .topic-card:hover { border-color:rgba(0,245,255,.3); box-shadow:0 8px 32px rgba(0,245,255,.06); }
+    .topic-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--cyan),transparent); opacity:0; transition:opacity .3s; }
+    .topic-card:hover::before { opacity:1; }
+    .t-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .t-name { font-family:'Orbitron',monospace; font-size:.82rem; font-weight:700; color:#fff; }
+    .t-pct  { font-family:'Orbitron',monospace; font-size:1.1rem; font-weight:900; }
+    .t-track { height:6px; background:rgba(255,255,255,.06); border-radius:100px; overflow:hidden; margin-bottom:10px; }
+    .t-fill  { height:100%; border-radius:100px; width:0; animation:fillBar 1.4s ease forwards; }
+    @keyframes fillBar { to { width:var(--w); } }
+    .t-meta { display:flex; justify-content:space-between; font-family:'Share Tech Mono',monospace; font-size:.58rem; color:var(--muted); letter-spacing:1px; }
+    .t-badge { display:inline-flex; align-items:center; gap:4px; border-radius:100px; padding:2px 9px; font-family:'Share Tech Mono',monospace; font-size:.56rem; letter-spacing:1px; border:1px solid; }
+
+    /* ── QUESTION BREAKDOWN TABLE ── */
+    .q-table { display:flex; flex-direction:column; gap:12px; }
+    .q-row {
+      background:var(--glass); border:1px solid var(--border); border-radius:12px;
+      padding:18px 22px; display:grid;
+      grid-template-columns: 38px 1fr auto;
+      gap:14px; align-items:center;
+      transition:border-color .3s; cursor:default;
+    }
+    .q-row:hover { border-color:rgba(0,245,255,.25); }
+    .q-row.skipped { border-color:rgba(255,165,0,.2); }
+    .q-row.skipped:hover { border-color:rgba(255,165,0,.4); }
+
+    .q-row-num {
+      font-family:'Orbitron',monospace; font-size:.6rem; font-weight:700;
+      width:34px; height:34px; border-radius:8px; border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted);
+    }
+    .q-row.answered .q-row-num { background:linear-gradient(135deg,var(--cyan),var(--purple)); color:var(--dark); border-color:transparent; }
+    .q-row.skipped  .q-row-num { background:rgba(255,165,0,.12); color:var(--orange); border-color:rgba(255,165,0,.3); }
+
+    .q-row-body {}
+    .q-row-text  { font-family:'Rajdhani',sans-serif; font-size:.95rem; font-weight:600; color:#fff; margin-bottom:5px; line-height:1.4; }
+    .q-row-topic { font-family:'Share Tech Mono',monospace; font-size:.58rem; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; }
+
+    .q-row-score { text-align:right; flex-shrink:0; }
+    .q-score-num { font-family:'Orbitron',monospace; font-size:1.2rem; font-weight:900; line-height:1; }
+    .q-score-lbl { font-family:'Share Tech Mono',monospace; font-size:.56rem; color:var(--muted); letter-spacing:1px; margin-top:2px; }
+    .skip-tag    { font-family:'Share Tech Mono',monospace; font-size:.62rem; color:var(--orange); letter-spacing:1px; background:rgba(255,165,0,.1); border:1px solid rgba(255,165,0,.25); border-radius:100px; padding:4px 10px; }
+
+    /* mini bar in question row */
+    .q-mini-bar  { grid-column:1/-1; height:3px; background:rgba(255,255,255,.05); border-radius:100px; overflow:hidden; margin-top:4px; }
+    .q-mini-fill { height:100%; border-radius:100px; width:0; animation:fillBar 1.2s ease forwards; }
+
+    /* ── INSIGHTS GRID ── */
+    .insights-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    @media(max-width:640px){ .insights-grid { grid-template-columns:1fr; } }
+
+    .insight-card {
+      background:var(--glass); border:1px solid var(--border); border-radius:14px;
+      padding:24px 22px;
+    }
+    .insight-card.strengths { border-color:rgba(34,211,160,.2); }
+    .insight-card.improve   { border-color:rgba(255,69,96,.18); }
+
+    .insight-head { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+    .insight-icon { font-size:1.4rem; }
+    .insight-title { font-family:'Orbitron',monospace; font-size:.82rem; font-weight:800; color:#fff; }
+
+    .insight-list { display:flex; flex-direction:column; gap:9px; }
+    .insight-item {
+      display:flex; align-items:flex-start; gap:9px;
+      font-size:.88rem; color:var(--text); line-height:1.5;
+    }
+    .insight-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:7px; }
+    .strengths .insight-dot { background:var(--green); box-shadow:0 0 6px var(--green); }
+    .improve   .insight-dot { background:var(--red);   box-shadow:0 0 6px var(--red); }
+
+    /* ── RADAR CHART ── */
+    .radar-wrap {
+      background:var(--glass); border:1px solid var(--border); border-radius:14px;
+      padding:32px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px;
+    }
+    .radar-title { font-family:'Orbitron',monospace; font-size:.8rem; font-weight:700; color:#fff; letter-spacing:1px; }
+    #radarCanvas { max-width:320px; width:100%; }
+
+    /* ── TIMELINE ── */
+    .timeline { display:flex; flex-direction:column; gap:0; }
+    .tl-item  { display:flex; gap:18px; padding-bottom:20px; position:relative; }
+    .tl-item:not(:last-child)::before { content:''; position:absolute; left:15px; top:36px; bottom:0; width:1px; background:var(--border); }
+    .tl-dot   { width:30px; height:30px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:.58rem; font-weight:700; border:1px solid; margin-top:3px; }
+    .tl-dot.done   { background:rgba(0,245,255,.1); border-color:rgba(0,245,255,.4); color:var(--cyan); }
+    .tl-dot.skip   { background:rgba(255,165,0,.1); border-color:rgba(255,165,0,.35); color:var(--orange); }
+    .tl-dot.miss   { background:rgba(74,85,104,.1); border-color:rgba(74,85,104,.4); color:var(--muted); }
+    .tl-body  { flex:1; }
+    .tl-q     { font-family:'Rajdhani',sans-serif; font-size:.92rem; font-weight:600; color:#fff; margin-bottom:4px; }
+    .tl-meta  { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .tl-chip  { font-family:'Share Tech Mono',monospace; font-size:.58rem; letter-spacing:1px; border-radius:100px; padding:3px 9px; border:1px solid; }
+
+    /* ── PRINT BUTTON ── */
+    .cta-row { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:64px; }
+    .btn-print {
+      font-family:'Orbitron',monospace; font-size:.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+      padding:14px 30px; background:var(--glass); border:1px solid var(--border); color:var(--text);
+      border-radius:8px; cursor:none; display:flex; align-items:center; gap:8px; transition:all .3s;
+    }
+    .btn-print:hover { border-color:var(--purple); color:var(--purple); box-shadow:0 0 20px rgba(168,85,247,.12); }
+    .btn-main {
+      font-family:'Orbitron',monospace; font-size:.72rem; font-weight:800; letter-spacing:2px; text-transform:uppercase;
+      padding:14px 32px; background:linear-gradient(135deg,var(--cyan),var(--purple)); color:var(--dark);
+      border:none; border-radius:8px; cursor:none; display:flex; align-items:center; gap:8px;
+      box-shadow:0 0 28px rgba(0,245,255,.25); transition:box-shadow .3s,transform .2s; text-decoration:none;
+    }
+    .btn-main:hover { box-shadow:0 0 48px rgba(0,245,255,.45); transform:translateY(-2px); }
+
+    /* Divider */
+    .divider { height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:48px 0; }
+
+    @media print {
+      body { background:#fff; color:#000; cursor:auto; }
+      #cur,#ring,#bgc,.grid,.scan,nav .btn-retry,nav .btn-home,.cta-row { display:none !important; }
+      .page { padding:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="ring"></div>
+<canvas id="bgc"></canvas>
+<div class="grid"></div>
+<div class="scan"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">AceInterview AI</a>
+  <div class="nav-r">
+    <div class="nav-pill">Session Report</div>
+    <a href="/" class="btn-home">← Home</a>
+    <a href="/start" class="btn-retry">⟳ Retry</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <div class="result-hero">
+    <div class="report-label">Interview Complete</div>
+    <h1 class="result-title">Your Performance <span>Report</span></h1>
+    <div class="result-date" id="reportDate"></div>
+  </div>
+
+  <!-- ── SCORE CENTREPIECE ── -->
+  <div class="score-centrepiece">
+
+    <!-- Big donut ring -->
+    <div class="big-ring-wrap">
+      <svg class="big-ring-svg" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="bigGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#00f5ff"/>
+            <stop offset="50%"  stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#f0abfc"/>
+          </linearGradient>
+        </defs>
+        <circle class="br-bg"    cx="100" cy="100" r="90"/>
+        <circle class="br-track" cx="100" cy="100" r="90"/>
+        <circle class="br-fill"  cx="100" cy="100" r="90" id="bigRing"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-score" id="scoreDisplay">0%</div>
+        <div class="ring-label">Overall</div>
+      </div>
+    </div>
+
+    <!-- Grade -->
+    <div class="grade-col">
+      <div class="grade-badge" id="gradeBadge">
+        <div class="grade-letter" id="gradeLetter">—</div>
+        <div class="grade-sub" id="gradeSub">GRADE</div>
+      </div>
+      <div class="grade-name" id="gradeName">—</div>
+      <div class="grade-desc" id="gradeDesc">—</div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div>
+          <div class="stat-val" id="statAnswered">—</div>
+          <div class="stat-key">Answered</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⟳</div>
+        <div>
+          <div class="stat-val" id="statSkipped">—</div>
+          <div class="stat-key">Skipped</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏱</div>
+        <div>
+          <div class="stat-val" id="statDuration">—</div>
+          <div class="stat-key">Duration</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div>
+          <div class="stat-val" id="statTopics">—</div>
+          <div class="stat-key">Topics Covered</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── TOPIC PERFORMANCE ── -->
+  <div class="section" id="secTopics">
+    <div class="sec-head">
+      <p class="sec-label">Breakdown</p>
+      <h2 class="sec-title">Topic-wise Performance</h2>
+    </div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+
+  <!-- ── RADAR + INSIGHTS ── -->
+  <div class="section" id="secInsights">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start" class="radar-insights-grid">
+
+      <div class="radar-wrap">
+        <div class="radar-title">Skill Radar</div>
+        <canvas id="radarCanvas" width="320" height="280"></canvas>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="insight-card strengths">
+          <div class="insight-head">
+            <div class="insight-icon">💪</div>
+            <div class="insight-title">Strengths</div>
+          </div>
+          <div class="insight-list" id="strengthsList"></div>
+        </div>
+        <div class="insight-card improve">
+          <div class="insight-head">
+            <div class="insight-icon">🎯</div>
+            <div class="insight-title">Areas to Improve</div>
+          </div>
+          <div class="insight-list" id="improveList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── QUESTION BY QUESTION ── -->
+  <div class="section" id="secQuestions">
+    <div class="sec-head">
+      <p class="sec-label">Detailed Review</p>
+      <h2 class="sec-title">Question-by-Question Results</h2>
+    </div>
+    <div class="q-table" id="qTable"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── SESSION TIMELINE ── -->
+  <div class="section" id="secTimeline">
+    <div class="sec-head">
+      <p class="sec-label">Flow</p>
+      <h2 class="sec-title">Session Timeline</h2>
+    </div>
+    <div class="timeline" id="timelineEl"></div>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div class="cta-row">
+    <button class="btn-print" onclick="window.print()">🖨 Print / Save PDF</button>
+    <a href="/start" class="btn-main">⟳ Start New Interview →</a>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA  — Flask injects this block
+   Replace the JS object below with Jinja2:
+
+   const REPORT = {{ report | tojson }};
+
+   Expected shape from app.py:
+   {
+     overall: 74,
+     answered: 9,
+     skipped: 2,
+     total: 12,
+     duration: "18:42",
+     topics: [
+       { name:"DSA",   score:78, questions:3, answered:3 },
+       { name:"OOP",   score:70, questions:3, answered:2 },
+       { name:"DBMS",  score:65, questions:3, answered:2 },
+       { name:"OS",    score:80, questions:3, answered:2 },
+     ],
+     questions: [
+       { id:1, text:"What is...", topic:"DSA", score:82, confidence:76, status:"answered" },
+       { id:2, text:"Explain...", topic:"OOP", score:0,  confidence:0,  status:"skipped"  },
+       ...
+     ],
+     strengths: ["Strong DSA fundamentals","Good OS process knowledge"],
+     improve:   ["Database normalization needs work","Review time complexity"],
+   }
+═══════════════════════════════════════════ */
+
+// ── FLASK INJECTION POINT ──
+const REPORT = {{ report | tojson }};
+
+
+
+/* ═══════════════
+   CURSOR
+   ═══════════════ */
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function ct(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.14;ry+=(my-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ct);})();
+
+/* ═══════════════
+   PARTICLE BG
+   ═══════════════ */
+const bc=document.getElementById('bgc'),bx=bc.getContext('2d');
+let W,H;function rz(){W=bc.width=innerWidth;H=bc.height=innerHeight;}rz();window.addEventListener('resize',rz);
+const pts=Array.from({length:50},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.4+.3,a:Math.random()*.3+.08,h:Math.random()>.5?185:270}));
+(function loop(){bx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;bx.beginPath();bx.arc(p.x,p.y,p.r,0,Math.PI*2);bx.fillStyle=`hsla(${p.h},100%,65%,${p.a})`;bx.fill();});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);if(d<90){bx.beginPath();bx.moveTo(pts[i].x,pts[i].y);bx.lineTo(pts[j].x,pts[j].y);bx.strokeStyle=`hsla(185,100%,65%,${(1-d/90)*.08})`;bx.lineWidth=.5;bx.stroke();}}requestAnimationFrame(loop);})();
+
+/* ═══════════════
+   HELPERS
+   ═══════════════ */
+function scoreColor(s){
+  if(s>=80) return 'var(--green)';
+  if(s>=65) return 'var(--cyan)';
+  if(s>=50) return 'var(--yellow)';
+  return 'var(--red)';
+}
+function scoreGradient(s){
+  if(s>=80) return 'linear-gradient(90deg,var(--green),var(--cyan))';
+  if(s>=65) return 'linear-gradient(90deg,var(--cyan),var(--purple))';
+  if(s>=50) return 'linear-gradient(90deg,var(--yellow),var(--orange))';
+  return 'linear-gradient(90deg,var(--red),#ff8a00)';
+}
+function gradeInfo(s){
+  if(s>=85) return {letter:'A+',name:'Exceptional',desc:'Top performance',cls:'grade-A'};
+  if(s>=75) return {letter:'A', name:'Excellent',  desc:'Well prepared',  cls:'grade-A'};
+  if(s>=65) return {letter:'B', name:'Good',       desc:'Above average',  cls:'grade-B'};
+  if(s>=55) return {letter:'C', name:'Average',    desc:'Needs practice', cls:'grade-C'};
+  return           {letter:'D', name:'Needs Work',  desc:'Keep studying',  cls:'grade-D'};
+}
+
+/* ═══════════════
+   COUNTER ANIMATION
+   ═══════════════ */
+function animCount(el, target, suffix='%', dur=1600){
+  let start=null;
+  function step(ts){
+    if(!start) start=ts;
+    const p=Math.min((ts-start)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(ease*target)+suffix;
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══════════════
+   RENDER HERO
+   ═══════════════ */
+const now=new Date();
+document.getElementById('reportDate').textContent=
+  now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+
+  ' · '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+// Score ring offset: circumference=2π*90≈565, offset=565*(1-pct/100)
+const pct = REPORT.overall;
+const offset = Math.round(565*(1-pct/100));
+document.getElementById('bigRing').style.setProperty('--offset', offset);
+
+setTimeout(()=>animCount(document.getElementById('scoreDisplay'), pct, '%', 1800), 800);
+
+const g = gradeInfo(pct);
+const gb = document.getElementById('gradeBadge');
+gb.className='grade-badge '+g.cls;
+document.getElementById('gradeLetter').textContent = g.letter;
+document.getElementById('gradeSub').textContent    = 'GRADE';
+document.getElementById('gradeName').textContent   = g.name;
+document.getElementById('gradeDesc').textContent   = g.desc;
+
+document.getElementById('statAnswered').textContent = `${REPORT.answered} / ${REPORT.total}`;
+document.getElementById('statSkipped').textContent  = REPORT.skipped;
+document.getElementById('statDuration').textContent = REPORT.duration;
+document.getElementById('statTopics').textContent   = REPORT.topics.filter(t=>t.answered>0).length;
+
+/* ═══════════════
+   TOPIC GRID
+   ═══════════════ */
+const topicGrid = document.getElementById('topicGrid');
+REPORT.topics.forEach((t,i)=>{
+  const sc=t.score||0;
+  const col=scoreColor(sc);
+  const grad=scoreGradient(sc);
+  const card=document.createElement('div');
+  card.className='topic-card';
+  card.style.animationDelay=`${i*0.08}s`;
+  card.innerHTML=`
+    <div class="t-head">
+      <div class="t-name">${t.name}</div>
+      <div class="t-pct" style="color:${col}">${t.answered>0?sc+'%':'N/A'}</div>
+    </div>
+    <div class="t-track"><div class="t-fill" style="--w:${t.answered>0?sc:0}%;background:${grad};animation-delay:${.6+i*.1}s"></div></div>
+    <div class="t-meta">
+      <span>${t.answered} / ${t.questions} answered</span>
+      <span class="t-badge" style="color:${col};border-color:${col};background:${col}22">${
+        sc>=75?'Strong':sc>=60?'Average':'Weak'
+      }</span>
+    </div>`;
+  topicGrid.appendChild(card);
+});
+
+/* ═══════════════
+   INSIGHTS
+   ═══════════════ */
+function buildList(el, items, cls){
+  items.forEach(txt=>{
+    const div=document.createElement('div');
+    div.className='insight-item';
+    div.innerHTML=`<div class="insight-dot"></div><span>${txt}</span>`;
+    el.appendChild(div);
+  });
+}
+buildList(document.getElementById('strengthsList'), REPORT.strengths, 'strengths');
+buildList(document.getElementById('improveList'),   REPORT.improve,   'improve');
+
+/* ═══════════════
+   RADAR CHART (Canvas)
+   ═══════════════ */
+function drawRadar(){
+  const canvas=document.getElementById('radarCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const cx=W/2, cy=H/2+10;
+  const r=Math.min(W,H)/2-50;
+  const topics=REPORT.topics.filter(t=>t.questions>0);
+  const n=topics.length;
+  if(n<3) return;
+
+  const angle=i=>(Math.PI*2/n)*i - Math.PI/2;
+
+  // grid rings
+  [.25,.5,.75,1].forEach(f=>{
+    ctx.beginPath();
+    topics.forEach((_,i)=>{
+      const a=angle(i);
+      const x=cx+Math.cos(a)*r*f, y=cy+Math.sin(a)*r*f;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle=`rgba(0,245,255,${0.06+f*.04})`;
+    ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // axis lines
+  topics.forEach((_,i)=>{
+    const a=angle(i);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+    ctx.strokeStyle='rgba(0,245,255,.1)';
+    ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // data polygon
+  ctx.beginPath();
+  topics.forEach((t,i)=>{
+    const v=(t.answered>0?t.score:0)/100;
+    const a=angle(i);
+    const x=cx+Math.cos(a)*r*v, y=cy+Math.sin(a)*r*v;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  const grad=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  grad.addColorStop(0,'rgba(0,245,255,.25)');
+  grad.addColorStop(1,'rgba(168,85,247,.25)');
+  ctx.fillStyle=grad;
+  ctx.fill();
+  ctx.strokeStyle='rgba(0,245,255,.7)';
+  ctx.lineWidth=2; ctx.stroke();
+
+  // dots + labels
+  topics.forEach((t,i)=>{
+    const v=(t.answered>0?t.score:0)/100;
+    const a=angle(i);
+    const dx=Math.cos(a), dy=Math.sin(a);
+    // dot
+    ctx.beginPath();
+    ctx.arc(cx+dx*r*v, cy+dy*r*v, 4, 0, Math.PI*2);
+    ctx.fillStyle='#00f5ff';
+    ctx.fill();
+    // label
+    const lx=cx+dx*(r+22), ly=cy+dy*(r+22);
+    ctx.font='bold 11px Share Tech Mono,monospace';
+    ctx.fillStyle='rgba(255,255,255,.75)';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(t.name, lx, ly);
+  });
+}
+drawRadar();
+
+/* ═══════════════
+   QUESTION TABLE
+   ═══════════════ */
+const qTable=document.getElementById('qTable');
+REPORT.questions.forEach((q,i)=>{
+  const answered=q.status==='answered';
+  const skipped =q.status==='skipped';
+  const sc=q.score||0;
+  const col=scoreColor(sc);
+  const grad=scoreGradient(sc);
+
+  const row=document.createElement('div');
+  row.className='q-row '+(answered?'answered':skipped?'skipped':'');
+  row.style.animationDelay=`${i*.04}s`;
+
+  row.innerHTML=`
+    <div class="q-row-num">${String(q.id).padStart(2,'0')}</div>
+    <div class="q-row-body">
+      <div class="q-row-text">${q.text}</div>
+      <div class="q-row-topic">${q.topic}</div>
+      <div class="q-mini-bar">
+        <div class="q-mini-fill" style="background:${grad};--w:${answered?sc:0}%;animation-delay:${.5+i*.05}s"></div>
+      </div>
+    </div>
+    <div class="q-row-score">
+      ${answered
+        ? `<div class="q-score-num" style="color:${col}">${sc}%</div>
+           <div class="q-score-lbl">AI Score</div>
+           <div class="q-score-lbl" style="color:var(--purple);margin-top:2px">${q.confidence}% conf</div>`
+        : `<div class="skip-tag">Skipped</div>`
+      }
+    </div>`;
+  qTable.appendChild(row);
+});
+
+/* ═══════════════
+   TIMELINE
+   ═══════════════ */
+const tl=document.getElementById('timelineEl');
+REPORT.questions.forEach((q,i)=>{
+  const answered=q.status==='answered';
+  const skipped =q.status==='skipped';
+  const sc=q.score||0;
+  const col=scoreColor(sc);
+
+  const item=document.createElement('div');
+  item.className='tl-item';
+  item.innerHTML=`
+    <div class="tl-dot ${answered?'done':skipped?'skip':'miss'}">${String(q.id).padStart(2,'0')}</div>
+    <div class="tl-body">
+      <div class="tl-q">${q.text}</div>
+      <div class="tl-meta">
+        <span class="tl-chip" style="color:var(--muted);border-color:var(--border)">${q.topic}</span>
+        ${answered
+          ? `<span class="tl-chip" style="color:${col};border-color:${col};background:${col}18">${sc}% Score</span>
+             <span class="tl-chip" style="color:var(--purple);border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08)">${q.confidence}% Confidence</span>`
+          : `<span class="tl-chip" style="color:var(--orange);border-color:rgba(255,165,0,.3);background:rgba(255,165,0,.08)">Skipped</span>`
+        }
+      </div>
+    </div>`;
+  tl.appendChild(item);
+});
+
+/* ═══════════════
+   SCROLL REVEAL
+   ═══════════════ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+},{threshold:.08});
+document.querySelectorAll('.section').forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

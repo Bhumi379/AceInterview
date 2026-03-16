@@ -1,0 +1,142 @@
+{
+  "overall": 52,
+  "answered": 1,
+  "skipped": 11,
+  "total": 12,
+  "duration": "00:34",
+  "topics": [
+    {
+      "name": "DSA",
+      "score": 52,
+      "questions": 2,
+      "answered": 1
+    },
+    {
+      "name": "DBMS",
+      "score": 0,
+      "questions": 1,
+      "answered": 0
+    },
+    {
+      "name": "Web Development",
+      "score": 0,
+      "questions": 5,
+      "answered": 0
+    },
+    {
+      "name": "OOP",
+      "score": 0,
+      "questions": 4,
+      "answered": 0
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "How do you move all zeroes to the end of an array in-place?",
+      "topic": "DSA",
+      "score": 52,
+      "confidence": 52,
+      "status": "answered",
+      "video": "answer_1_20260316_233804.webm"
+    },
+    {
+      "id": 2,
+      "text": "Explain the ACID properties in databases.",
+      "topic": "DBMS",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 3,
+      "text": "What are Promises in JavaScript?",
+      "topic": "Web Development",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 4,
+      "text": "What is event delegation in JavaScript?",
+      "topic": "Web Development",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 5,
+      "text": "Explain closures in JavaScript.",
+      "topic": "Web Development",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 6,
+      "text": "What is binary search and how do you implement it?",
+      "topic": "DSA",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 7,
+      "text": "What is the Temporal Dead Zone (TDZ) in JavaScript?",
+      "topic": "Web Development",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 8,
+      "text": "What are virtual functions and pure virtual functions?",
+      "topic": "OOP",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 9,
+      "text": "What is the difference between var, let, and const in JavaScript?",
+      "topic": "Web Development",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 10,
+      "text": "What is a destructor or finalizer in OOP?",
+      "topic": "OOP",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 11,
+      "text": "How do access specifiers work and what are they typically?",
+      "topic": "OOP",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    },
+    {
+      "id": 12,
+      "text": "What is inheritance? Name some types of inheritance.",
+      "topic": "OOP",
+      "score": 0,
+      "confidence": 0,
+      "status": "skipped"
+    }
+  ],
+  "strengths": [
+    "Completed the interview session",
+    "Showed willingness to attempt questions"
+  ],
+  "improve": [
+    "Revise DSA concepts \u2014 scored 52%",
+    "Attempt skipped OOP questions next time",
+    "Attempt skipped Web Development questions next time",
+    "Attempt skipped DBMS questions next time"
+  ]
+}
