@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard · AceInterview AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --cyan:#00f5ff;--purple:#a855f7;--pink:#f0abfc;
+      --green:#22d3a0;--orange:#ffa500;--red:#ff4560;--yellow:#fbbf24;
+      --dark:#020817;--dark2:#080f1f;--dark3:#0d1530;
+      --glass:rgba(255,255,255,0.04);--glassc:rgba(0,245,255,0.05);
+      --border:rgba(0,245,255,0.13);--text:#e2e8f0;--muted:#4a5568;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:none;}
+
+    #cur {position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan);}
+    #ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(0,245,255,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s;}
+    #bgc {position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;}
+    .grid{position:fixed;inset:0;z-index:1;background-image:linear-gradient(rgba(0,245,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.016) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+    .scan{position:fixed;inset:0;z-index:2;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;}
+
+    /* ── NAV ── */
+    nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:13px 36px;background:rgba(2,8,23,.92);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+    .logo{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-r{display:flex;align-items:center;gap:12px;}
+    .user-chip{display:flex;align-items:center;gap:9px;background:var(--glassc);border:1px solid var(--border);border-radius:100px;padding:6px 16px 6px 8px;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text);letter-spacing:1px;}
+    .user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.65rem;font-weight:900;color:var(--dark);}
+    .btn-start{font-family:'Orbitron',monospace;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:10px 22px;background:linear-gradient(135deg,var(--cyan),var(--purple));color:var(--dark);border:none;border-radius:7px;cursor:none;text-decoration:none;box-shadow:0 0 20px rgba(0,245,255,.22);transition:box-shadow .3s,transform .2s;}
+    .btn-start:hover{box-shadow:0 0 36px rgba(0,245,255,.45);transform:translateY(-1px);}
+    .btn-logout{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:1.5px;padding:8px 14px;background:none;border:1px solid var(--border);border-radius:7px;cursor:none;text-decoration:none;transition:all .3s;}
+    .btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+    /* ── PAGE ── */
+    .page{max-width:1160px;margin:0 auto;padding:44px 24px 80px;position:relative;z-index:10;}
+
+    /* ── WELCOME HEADER ── */
+    .welcome{margin-bottom:44px;animation:fadeUp .6s ease both;}
+    .welcome-label{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+    .welcome-label::before{content:'';width:20px;height:1px;background:var(--cyan);}
+    .welcome-title{font-family:'Orbitron',monospace;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;color:#fff;line-height:1.15;}
+    .welcome-title span{background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .welcome-sub{color:var(--muted);font-size:1rem;margin-top:8px;}
+
+    /* ── STATS CARDS ── */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:36px;}
+    @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:500px){.stats-row{grid-template-columns:1fr;}}
+
+    .stat-card{
+      background:var(--glass);border:1px solid var(--border);border-radius:14px;
+      padding:22px 22px;position:relative;overflow:hidden;
+      transition:border-color .3s,transform .2s;
+      animation:fadeUp .6s ease both;
+    }
+    .stat-card:hover{border-color:rgba(0,245,255,.28);transform:translateY(-3px);}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s;}
+    .stat-card:hover::before{opacity:1;}
+    .stat-card:nth-child(1)::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+    .stat-card:nth-child(2)::before{background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+    .stat-card:nth-child(3)::before{background:linear-gradient(90deg,transparent,var(--green),transparent);}
+    .stat-card:nth-child(4)::before{background:linear-gradient(90deg,transparent,var(--yellow),transparent);}
+
+    .sc-icon{font-size:1.6rem;margin-bottom:12px;}
+    .sc-val{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:4px;}
+    .sc-key{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+
+    /* ── GRID LAYOUT ── */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
+    @media(max-width:800px){.grid-2{grid-template-columns:1fr;}}
+    .grid-3{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:32px;}
+    @media(max-width:800px){.grid-3{grid-template-columns:1fr;}}
+
+    /* ── PANEL ── */
+    .panel{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:26px 24px;position:relative;overflow:hidden;}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+    .panel-title{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:800;color:#fff;letter-spacing:.5px;}
+    .panel-sub{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:1.5px;}
+
+    /* ── SCORE TREND CHART ── */
+    #trendCanvas{width:100%;height:180px;display:block;}
+
+    /* ── TOPIC BARS ── */
+    .topic-list{display:flex;flex-direction:column;gap:13px;}
+    .topic-row{display:flex;align-items:center;gap:10px;}
+    .topic-name{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text);letter-spacing:1px;width:90px;flex-shrink:0;}
+    .topic-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;}
+    .topic-fill{height:100%;border-radius:100px;width:0;animation:fillBar 1.2s ease forwards;}
+    @keyframes fillBar{to{width:var(--w);}}
+    .topic-pct{font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;width:36px;text-align:right;}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{text-align:center;padding:40px 20px;}
+    .empty-icon{font-size:3rem;margin-bottom:14px;opacity:.5;}
+    .empty-title{font-family:'Orbitron',monospace;font-size:.9rem;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+    .empty-sub{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:1px;line-height:1.6;}
+
+    /* ── SESSION HISTORY TABLE ── */
+    .history-table{display:flex;flex-direction:column;gap:10px;}
+    .history-row{
+      display:grid;grid-template-columns:48px 1fr auto;
+      align-items:center;gap:14px;
+      background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+      border-radius:10px;padding:13px 16px;
+      transition:border-color .25s,background .25s;
+      text-decoration:none;cursor:none;
+    }
+    .history-row:hover{border-color:rgba(0,245,255,.25);background:rgba(0,245,255,.03);}
+
+    .hr-num{font-family:'Orbitron',monospace;font-size:.62rem;font-weight:700;color:var(--dark);width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 10px rgba(0,245,255,.2);}
+    .hr-info{}
+    .hr-date{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+    .hr-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .hr-chip{font-family:'Share Tech Mono',monospace;font-size:.56rem;letter-spacing:1px;border-radius:100px;padding:2px 8px;border:1px solid;}
+    .hr-score{text-align:right;}
+    .hr-pct{font-family:'Orbitron',monospace;font-size:1.15rem;font-weight:900;line-height:1;}
+    .hr-lbl{font-family:'Share Tech Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+
+    /* ── RADAR (small) ── */
+    #radarMini{display:block;margin:0 auto;}
+
+    /* ── FIRST SESSION CTA ── */
+    .first-cta{
+      background:var(--glass);border:1px solid var(--border);border-radius:16px;
+      padding:48px 36px;text-align:center;margin-bottom:32px;
+      position:relative;overflow:hidden;
+    }
+    .first-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,245,255,.05),transparent 60%);pointer-events:none;}
+    .first-cta-title{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:10px;}
+    .first-cta-sub{color:var(--muted);font-size:1rem;margin-bottom:28px;line-height:1.6;}
+    .btn-big{display:inline-flex;align-items:center;gap:10px;font-family:'Orbitron',monospace;font-size:.82rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:16px 40px;background:linear-gradient(135deg,var(--cyan),var(--purple));color:var(--dark);border:none;border-radius:8px;cursor:none;text-decoration:none;box-shadow:0 0 32px rgba(0,245,255,.28);transition:box-shadow .3s,transform .2s;}
+    .btn-big:hover{box-shadow:0 0 56px rgba(0,245,255,.5);transform:translateY(-2px);}
+
+    /* Scroll reveal */
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+
+<div id="cur"></div><div id="ring"></div>
+<canvas id="bgc"></canvas>
+<div class="grid"></div><div class="scan"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">AceInterview AI</a>
+  <div class="nav-r">
+    <div class="user-chip">
+      <div class="user-avatar">{{ user.name[0].upper() }}</div>
+      {{ user.name.split()[0] }}
+    </div>
+    <a href="/start"  class="btn-start">⏺ New Interview</a>
+    <a href="/logout" class="btn-logout">Logout</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- WELCOME -->
+  <div class="welcome">
+    <div class="welcome-label">Personal Dashboard</div>
+    <h1 class="welcome-title">Welcome back, <span>{{ user.name.split()[0] }}</span></h1>
+    <p class="welcome-sub">
+      {{ user.target_role }}
+      {% if user.college %} · {{ user.college }}{% endif %}
+    </p>
+  </div>
+
+  {% if stats.sessions == 0 %}
+  <!-- FIRST TIME USER -->
+  <div class="first-cta reveal">
+    <h2 class="first-cta-title">Your journey starts here</h2>
+    <p class="first-cta-sub">Take your first mock interview and get an instant AI-powered report<br/>on your performance, confidence score, and areas to improve.</p>
+    <a href="/start" class="btn-big">Start First Interview →</a>
+  </div>
+
+  {% else %}
+
+  <!-- STATS CARDS -->
+  <div class="stats-row">
+    <div class="stat-card" style="animation-delay:.05s">
+      <div class="sc-icon">🎯</div>
+      <div class="sc-val" style="color:var(--cyan)">{{ stats.sessions }}</div>
+      <div class="sc-key">Sessions Taken</div>
+    </div>
+    <div class="stat-card" style="animation-delay:.1s">
+      <div class="sc-icon">🏆</div>
+      <div class="sc-val" style="color:var(--green)">{{ stats.best_score }}%</div>
+      <div class="sc-key">Best Score</div>
+    </div>
+    <div class="stat-card" style="animation-delay:.15s">
+      <div class="sc-icon">📊</div>
+      <div class="sc-val" style="color:var(--purple)">{{ stats.avg_score }}%</div>
+      <div class="sc-key">Avg Score</div>
+    </div>
+    <div class="stat-card" style="animation-delay:.2s">
+      <div class="sc-icon">✅</div>
+      <div class="sc-val" style="color:var(--yellow)">{{ stats.total_qs }}</div>
+      <div class="sc-key">Questions Answered</div>
+    </div>
+  </div>
+
+  <!-- TREND + TOPICS -->
+  <div class="grid-3 reveal">
+
+    <!-- Score trend chart -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Score Trend</div>
+        <div class="panel-sub">Last {{ trend|length }} sessions</div>
+      </div>
+      {% if trend %}
+      <canvas id="trendCanvas"></canvas>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📈</div>
+        <div class="empty-title">No trend data yet</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Topic averages -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Topic Averages</div>
+        <div class="panel-sub">All sessions</div>
+      </div>
+      {% if topic_averages %}
+      <div class="topic-list">
+        {% for t in topic_averages %}
+        {% set col = '#22d3a0' if t.score >= 75 else ('#00f5ff' if t.score >= 60 else '#ff4560') %}
+        <div class="topic-row">
+          <div class="topic-name">{{ t.name }}</div>
+          <div class="topic-track">
+            <div class="topic-fill" style="--w:{{ t.score }}%;background:{{ col }};animation-delay:{{ loop.index0 * 0.08 }}s"></div>
+          </div>
+          <div class="topic-pct" style="color:{{ col }}">{{ t.score }}%</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:20px">
+        <div class="empty-sub">No topic data yet</div>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- SESSION HISTORY -->
+  <div class="reveal">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Session History</div>
+        <div class="panel-sub">{{ stats.sessions }} total session{{ 's' if stats.sessions != 1 }}</div>
+      </div>
+
+      {% if reports %}
+      <div class="history-table">
+        {% for r in reports %}
+        {% set col = '#22d3a0' if r.overall >= 75 else ('#00f5ff' if r.overall >= 60 else ('#fbbf24' if r.overall >= 45 else '#ff4560')) %}
+        {% set grade = 'A' if r.overall >= 75 else ('B' if r.overall >= 60 else ('C' if r.overall >= 45 else 'D')) %}
+        <a href="/report/{{ r.id }}" class="history-row">
+          <div class="hr-num">{{ loop.index }}</div>
+          <div class="hr-info">
+            <div class="hr-date">{{ r.created_at.strftime('%d %b %Y · %I:%M %p') }}</div>
+            <div class="hr-meta">
+              <span class="hr-chip" style="color:var(--cyan);border-color:rgba(0,245,255,.25);background:rgba(0,245,255,.06)">{{ r.answered }}/{{ r.total }} answered</span>
+              {% if r.skipped > 0 %}
+              <span class="hr-chip" style="color:var(--orange);border-color:rgba(255,165,0,.25);background:rgba(255,165,0,.06)">{{ r.skipped }} skipped</span>
+              {% endif %}
+              <span class="hr-chip" style="color:var(--muted);border-color:rgba(255,255,255,.08)">{{ r.duration }}</span>
+              <span class="hr-chip" style="color:{{ col }};border-color:{{ col }}44;background:{{ col }}11">Grade {{ grade }}</span>
+            </div>
+          </div>
+          <div class="hr-score">
+            <div class="hr-pct" style="color:{{ col }}">{{ r.overall }}%</div>
+            <div class="hr-lbl">Overall</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No sessions yet</div>
+        <div class="empty-sub">Complete an interview to see your history here</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% endif %}
+
+</div><!-- end .page -->
+
+<!-- Inject Flask data into JS -->
+<script>
+const TREND  = {{ trend | tojson }};
+const TOPICS = {{ topic_averages | tojson }};
+
+/* cursor */
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function ct(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.14;ry+=(my-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ct);})();
+
+/* particle bg */
+const bc=document.getElementById('bgc'),bx=bc.getContext('2d');
+let W,H;function rz(){W=bc.width=innerWidth;H=bc.height=innerHeight;}rz();window.addEventListener('resize',rz);
+const pts=Array.from({length:45},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.3+.3,a:Math.random()*.25+.07,h:Math.random()>.5?185:270}));
+(function loop(){bx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;bx.beginPath();bx.arc(p.x,p.y,p.r,0,Math.PI*2);bx.fillStyle=`hsla(${p.h},100%,65%,${p.a})`;bx.fill();});requestAnimationFrame(loop);})();
+
+/* scroll reveal */
+const obs=new IntersectionObserver(e=>e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');obs.unobserve(el.target);}}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* Score trend line chart */
+if(TREND.length > 0){
+  const canvas = document.getElementById('trendCanvas');
+  if(canvas){
+    canvas.width  = canvas.offsetWidth  || 600;
+    canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    const W2=canvas.width, H2=canvas.height;
+    const PAD={t:16,r:20,b:36,l:36};
+    const cW=W2-PAD.l-PAD.r, cH=H2-PAD.t-PAD.b;
+
+    const scores = TREND.map(t=>t.score);
+    const maxV   = Math.max(...scores, 100);
+    const minV   = Math.max(0, Math.min(...scores) - 10);
+    const xStep  = TREND.length > 1 ? cW/(TREND.length-1) : cW;
+
+    const px = i => PAD.l + (TREND.length > 1 ? i*xStep : cW/2);
+    const py = v => PAD.t + cH - ((v-minV)/(maxV-minV))*cH;
+
+    // grid lines
+    [0,.25,.5,.75,1].forEach(f=>{
+      const y=PAD.t+cH*(1-f);
+      ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(PAD.l+cW,y);
+      ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.fillStyle='rgba(100,116,139,.6)';
+      ctx.font='10px Share Tech Mono,monospace';
+      ctx.textAlign='right';
+      ctx.fillText(Math.round(minV+(maxV-minV)*f)+'%', PAD.l-5, y+4);
+    });
+
+    // area fill
+    const grad=ctx.createLinearGradient(0,PAD.t,0,PAD.t+cH);
+    grad.addColorStop(0,'rgba(0,245,255,.18)');
+    grad.addColorStop(1,'rgba(0,245,255,0)');
+    ctx.beginPath();
+    ctx.moveTo(px(0), PAD.t+cH);
+    TREND.forEach((_,i)=>ctx.lineTo(px(i),py(scores[i])));
+    ctx.lineTo(px(TREND.length-1), PAD.t+cH);
+    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+
+    // line
+    ctx.beginPath();
+    TREND.forEach((t,i)=>{ i===0?ctx.moveTo(px(i),py(scores[i])):ctx.lineTo(px(i),py(scores[i])); });
+    ctx.strokeStyle='rgba(0,245,255,.85)'; ctx.lineWidth=2.5;
+    ctx.lineJoin='round'; ctx.stroke();
+
+    // dots + labels
+    TREND.forEach((t,i)=>{
+      // dot glow
+      ctx.beginPath(); ctx.arc(px(i),py(scores[i]),7,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,245,255,.12)'; ctx.fill();
+      // dot
+      ctx.beginPath(); ctx.arc(px(i),py(scores[i]),4,0,Math.PI*2);
+      ctx.fillStyle='#00f5ff'; ctx.fill();
+      // value label
+      ctx.fillStyle='rgba(226,232,240,.85)';
+      ctx.font='bold 10px Orbitron,monospace';
+      ctx.textAlign='center';
+      ctx.fillText(scores[i]+'%', px(i), py(scores[i])-10);
+      // date label
+      ctx.fillStyle='rgba(100,116,139,.7)';
+      ctx.font='9px Share Tech Mono,monospace';
+      ctx.fillText(t.date, px(i), PAD.t+cH+16);
+    });
+  }
+}
+</script>
+</body>
+</html>
